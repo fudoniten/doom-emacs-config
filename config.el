@@ -6,8 +6,8 @@
 
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
-(setq user-full-name "John Doe"
-      user-mail-address "john@doe.com")
+(setq user-full-name "Niten"
+      user-mail-address "niten@fudo.org")
 
 ;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
 ;; are the three important ones:
@@ -52,3 +52,75 @@
 ;;
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
+
+(load! "site-functions.el")
+
+(setq inferior-lisp-program "sbcl")
+
+(setq emerge-diff-options "--ignore-all-space")
+
+(setq alert-default-style 'libnotify)
+
+(setq sentence-end-double-space nil)
+
+(setq diff-switches "-u")
+
+(setq tab-always-indent t)
+
+(defadvice kill-buffer (around kill-buffer-around-advice activate)
+  "Bury the *scratch* buffer, but never kill it."
+  (let ((buffer-to-kill (ad-get-arg 0)))
+    (if (equal buffer-to-kill "*scratch*")
+        (bury-buffer)
+      ad-do-it)))
+
+(defun save-persistent-scratch ()
+  "Write the contents of *scratch* to the file name
+`persistent-scratch-file-name'."
+  (with-current-buffer (get-buffer-create "*scratch*")
+    (write-region (point-min) (point-max) "~/.emacs.d/persistent-scratch.el")))
+
+(defun load-persistent-scratch ()
+  "Load the contents of `persistent-scratch-file-name' into the
+  scratch buffer, clearing its contents first."
+  (when (file-exists-p "~/.emacs.d/persistent-scratch.el")
+    (with-current-buffer (get-buffer "*scratch*")
+      (delete-region (point-min) (point-max))
+      (insert-file-contents "~/.emacs.d/persistent-scratch.el"))))
+
+(add-hook 'after-init-hook 'load-persistent-scratch)
+(add-hook 'kill-emacs-hook 'save-persistent-scratch)
+
+(when (eq system-type 'darwin)
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'meta))
+
+(when (or (eq window-system 'x)
+          (eq window-system 'darwin))
+  (when (boundp 'edit-start-server)
+    (edit-start-server)))
+
+(global-prettify-symbols-mode 1)
+
+(with-current-buffer (get-buffer "*scratch*")
+  (emacs-lisp-mode))
+
+(defun filter (condp lst)
+  "Filter list lst to only those elements matching condp."
+  (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
+
+(let ((site-dir (expand-file-name "~/.doom.d/site.d/")))
+  (let ((configs (filter (lambda (name)
+                           (not (or (string-match "~$" name)
+                                    (string-match "^[.]" name))))
+                         (directory-files site-dir))))
+    (dolist (file configs)
+      (let ((full-file (expand-file-name file site-dir)))
+        (if (or (file-regular-p full-file) (file-symlink-p full-file))
+          (progn (message "Loading file %s" full-file)
+                 (load full-file))
+          (message "Skipping invalid file %s" full-file))))))
+
+(provide 'config)
+
+;;; config.el ends here
