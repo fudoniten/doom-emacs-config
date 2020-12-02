@@ -55,6 +55,8 @@
 
 (load! "site-functions.el")
 
+(setq-default tab-width 2)
+
 (setq inferior-lisp-program "sbcl")
 
 (setq emerge-diff-options "--ignore-all-space")
