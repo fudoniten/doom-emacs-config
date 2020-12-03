@@ -104,6 +104,8 @@
 
 (global-prettify-symbols-mode 1)
 
+(ivy-prescient-mode 1)
+
 (with-current-buffer (get-buffer "*scratch*")
   (emacs-lisp-mode))
 
