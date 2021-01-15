@@ -115,7 +115,7 @@
 
 (add-hook 'eshell-mode-hook
           (lambda ()
-           (setenv "PAGER" "cat"))
+           (setenv "PAGER" "cat")
            (setenv "EDITOR" "emacsclient")))
 
 (let ((site-dir (expand-file-name "~/.doom.d/site.d/")))
