@@ -113,6 +113,11 @@
   "Filter list lst to only those elements matching condp."
   (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
+(add-hook 'eshell-mode-hook
+          (lambda ()
+           (setenv "PAGER" "cat"))
+           (setenv "EDITOR" "emacsclient")))
+
 (let ((site-dir (expand-file-name "~/.doom.d/site.d/")))
   (let ((configs (filter (lambda (name)
                            (not (or (string-match "~$" name)
