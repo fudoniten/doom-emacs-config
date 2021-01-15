@@ -141,16 +141,7 @@
 
 (defun my-forward-word ()
   "Move one word forward. Leave the pointer at start of word."
-  (interactive)(defun bash-env-var (varname)
-  (replace-regexp-in-string "\n&" ""
-                            (shell-command-to-string
-                             (string-join (list ". ~/.bash_profile; echo $"
-                                                varname)))))
-
-(defun intern-bash-env-var (varname)                                                                                                                                                                                                                                                                                                                                                   
-  (let ((val (bash-env-var varname)))
-       (setenv varname val)
-       val))
+  (interactive)
   (forward-char 1)
   (backward-word 1)
   (forward-word 2)
@@ -275,7 +266,7 @@
 (defun get-path ()
   (split-string (getenv "PATH") ":"))
 
-(defun string-join (lst chr)
+(cl-defun string-join (lst &optional (chr ""))
   (mapconcat 'identity lst chr))
 
 (defun any-p (f lst)
