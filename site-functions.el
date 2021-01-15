@@ -274,7 +274,7 @@
    (lambda (a b) (or a b))
    (mapcar f lst)
    :initial-value '()))
--
+
 (defun every-p (f lst)
   (reduce
    (lambda (a b) (and a b))
