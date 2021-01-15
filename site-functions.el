@@ -141,7 +141,16 @@
 
 (defun my-forward-word ()
   "Move one word forward. Leave the pointer at start of word."
-  (interactive)
+  (interactive)(defun bash-env-var (varname)
+  (replace-regexp-in-string "\n&" ""
+                            (shell-command-to-string
+                             (string-join (list ". ~/.bash_profile; echo $"
+                                                varname)))))
+
+(defun intern-bash-env-var (varname)                                                                                                                                                                                                                                                                                                                                                   
+  (let ((val (bash-env-var varname)))
+       (setenv varname val)
+       val))
   (forward-char 1)
   (backward-word 1)
   (forward-word 2)
@@ -165,32 +174,6 @@
 	(indent-region (region-beginning)
 		       (region-end))
       (indent-for-tab-command))))
-
-;; (defun smart-tab ()
-;;   "This smart tab is minibuffer compliant: it acts as usual in
-;;     the minibuffer. Else, if mark is active, indents region. Else if
-;;     point is at the end of a symbol, expands it. Else indents the
-;;     current line."
-;;   (interactive)
-;;   (if (minibufferp)
-;;       (unless (minibuffer-complete)
-;;         (dabbrev-expand nil))
-;;     (if mark-active
-;;         (indent-region (region-beginning)
-;;                        (region-end))
-;;       (if (looking-at "\\_>")
-;;           ;;(dabbrev-expand nil)
-;; 	  (hippie-expand nil)
-;;         (indent-for-tab-command)))))
-
-;; (defun indent-or-expand (arg)
-;;   "Either indent according to mode, or expand the word preceding point."
-;;   (interactive "*P")
-;;   (if (and
-;;        (or (bobp) (= ?w (char-syntax (char-before))))
-;;        (or (eobp) (not (= ?w (char-syntax (char-after))))))
-;;       (hippie-expand arg)
-;;     (indent-according-to-mode)))
 
 (defun copy-line (&optional arg)
   (interactive)
@@ -300,7 +283,7 @@
    (lambda (a b) (or a b))
    (mapcar f lst)
    :initial-value '()))
-
+-
 (defun every-p (f lst)
   (reduce
    (lambda (a b) (and a b))
@@ -399,5 +382,18 @@ even beep.)"
   (while alist
     (progn (funcall f (car alist))
            (setq alist (cdr alist)))))
+
+(defun bash-env-var (varname)
+  (replace-regexp-in-string "\n$" ""
+                            (shell-command-to-string
+                             (string-join (list ". ~/.bash_profile; echo $"
+                                                varname)))))
+
+(defun intern-bash-env-var (varname)                                                                                                                                                                                                                                                                                                                                                   
+  (let ((val (bash-env-var varname)))
+       (setenv varname val)
+       val))
+
+(provide 'site-functions)
 
 ;; site-functions.el ends here
