@@ -19,7 +19,7 @@
 
 
 ;;
-n;;; Leader keys
+;;; Leader keys
 
 (map! :leader
 
@@ -462,7 +462,7 @@ n;;; Leader keys
       (:when (featurep! :completion ivy)
        "C-x b"      #'ivy-switch-buffer
        "C-x 4 b"    #'ivy-switch-buffer-other-window)
-      (:when (not featurep! :completion ivy)
+      (:when (not (featurep! :completion ivy))
        "C-x b"       #'switch-to-buffer
        "C-x 4 b"     #'switch-to-buffer-other-window)
 
