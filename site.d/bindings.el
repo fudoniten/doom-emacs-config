@@ -30,7 +30,7 @@
       (:prefix ("l" . "<localleader>")) ; bound locally
       (:prefix ("!" . "checkers"))      ; bound by flycheck
 
-      :desc "Extended command"            "C-e" #'execute-extended-command
+      :desc "Extended command"            "C-m" #'execute-extended-command
       :desc "Kill whitespace"             ";"   #'kill-whitespace
       :desc "Toggle readonly mode"        "R"   #'read-only-mode
 
@@ -590,7 +590,7 @@
 
 (map! :leader
       (:when (featurep! :editor fold)
-       (:prefix ("C-f" . "fold")
+       (:prefix ("C-F" . "fold")
         "C-d"     #'vimish-fold-delete
         "C-a C-d" #'vimish-fold-delete-all
         "C-f"     #'+fold/toggle
@@ -599,7 +599,7 @@
         "C-a C-u" #'+fold/open-all)))
 
 (map! "M-g"     #'goto-line
-      "C-x C-b" #'execute-extended-command
+      "C-x C-m" #'execute-extended-command
       "C-a"     #'beginning-of-line-text
       "C-A"     #'beginning-of-line
       "C-e"     #'end-of-line
@@ -609,3 +609,6 @@
       "C-!"     #'eshell-here
       "C-M-p"   #'mc/mark-previous-like-this
       "C-M-n"   #'mc/mark-next-like-this)
+
+(provide 'bindings)
+;;; bindings.el ends here
