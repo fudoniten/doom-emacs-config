@@ -53,6 +53,8 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+(require 'cl)
+
 (load! "site-functions.el")
 
 (setq-default tab-width 2)
@@ -117,6 +119,14 @@
           (lambda ()
            (setenv "PAGER" "cat")
            (setenv "EDITOR" "emacsclient")))
+
+(defun get-bash-path ()
+  (let* ((bash-path (bash-env-var "PATH"))
+         (path-dirs (split-string bash-path ":")))
+    (filter #'file-directory-p path-dirs)))
+
+(setq exec-path (remove-duplicates (append (get-bash-path) exec-path)
+                                   :test #'equal))
 
 (let ((site-dir (expand-file-name "~/.doom.d/site.d/")))
   (let ((configs (filter (lambda (name)
