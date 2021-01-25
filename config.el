@@ -108,11 +108,13 @@
 
 (ivy-prescient-mode 1)
 
+(global-subword-mode 1)
+
 (with-current-buffer (get-buffer "*scratch*")
   (emacs-lisp-mode))
 
 (defun filter (condp lst)
-  "Filter list lst to only those elements matching condp."
+  "Filter list LST to only those elements matching CONDP."
   (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 (add-hook 'eshell-mode-hook
@@ -121,6 +123,7 @@
            (setenv "EDITOR" "emacsclient")))
 
 (defun get-bash-path ()
+  "Return paths from the bash PATH."
   (let* ((bash-path (bash-env-var "PATH"))
          (path-dirs (split-string bash-path ":")))
     (filter #'file-directory-p path-dirs)))
