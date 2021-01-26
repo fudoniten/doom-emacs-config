@@ -610,5 +610,10 @@
       "C-M-p"   #'mc/mark-previous-like-this
       "C-M-n"   #'mc/mark-next-like-this)
 
+(global-unset-key (kbd "<down-mouse-1>"))
+(global-unset-key (kbd "<mouse-1>"))
+(global-unset-key (kbd "<down-mouse-3>"))
+(global-unset-key (kbd "<mouse-3>"))
+
 (provide 'bindings)
 ;;; bindings.el ends here
