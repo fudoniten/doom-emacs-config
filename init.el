@@ -169,9 +169,9 @@
        yaml              ; JSON, but readable
 
        :email
-       ;;(mu4e +gmail)
-       ;;notmuch
-       ;;(wanderlust +gmail)
+       (mu4e +gmail)
+       notmuch
+       (wanderlust +gmail)
 
        :app
        ;;calendar
