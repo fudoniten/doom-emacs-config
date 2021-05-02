@@ -9,36 +9,36 @@
 (when (require 'md4rd nil 'noerror)
 
   (setq md4rd-subs-active
-        (list academicbiblical
-              askhistorian
-              askreddit
-              askscience
-              bitcoin
-              changemyview
-              clojure
-              common_lisp
-              compsci
-              cryptocurrency
-              emacs
-              fire
-              futurelings
-              guile
-              guix
-              ipfs
-              learnprogramming
-              linux
-              lisp
-              neutralpolitics
-              nixos
-              outoftheloop
-              personalfinance
-              politics
-              programming
-              racket
-              science
-              todayilearned
-              unpopularopinion
-              worldnews))
+        '(academicbiblical
+          askhistorian
+          askreddit
+          askscience
+          bitcoin
+          changemyview
+          clojure
+          common_lisp
+          compsci
+          cryptocurrency
+          emacs
+          fire
+          futurelings
+          guile
+          guix
+          ipfs
+          learnprogramming
+          linux
+          lisp
+          neutralpolitics
+          nixos
+          outoftheloop
+          personalfinance
+          politics
+          programming
+          racket
+          science
+          todayilearned
+          unpopularopinion
+          worldnews))
 
   (defun consider-refresh-md4rd-login ()
     (when (and (boundp 'md4rd--oauth-client-id)
