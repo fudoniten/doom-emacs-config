@@ -43,7 +43,10 @@
   (defun consider-refresh-md4rd-login ()
     (when (and (boundp 'md4rd--oauth-client-id)
                (boundp 'md4rd--oauth-access-token)
-               (boundp 'md4rd--oauth-refresh-token))
+               (boundp 'md4rd--oauth-refresh-token)
+               (not (string= "" md4rd--oauth-client-id))
+               (not (string= "" md4rd--oauth-access-token))
+               (not (string= "" md4rd--oauth-refresh-token)))
       (md4rd-refresh-login)))
 
   (run-with-timer 0 3540 'consider-refresh-md4rd-login)
