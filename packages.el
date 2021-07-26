@@ -27,9 +27,9 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
   (let ((gnutls-verify-error nil))
     (apply orig-fun args)))
 
-(use-package! elpher
-  :config
-  (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
+;; (use-package! elpher
+;;  :config
+;;  (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
