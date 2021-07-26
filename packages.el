@@ -11,21 +11,21 @@
 ; (package! some-package)
 
 ;;(package! elpher)
-(package! edit-server)
-(package! ivy-prescient)
-(package! ace-jump-mode)
-(package! md4rd)
-(package! noflet)
+;;(package! edit-server)
+;;(package! ivy-prescient)
+;;(package! ace-jump-mode)
+;;(package! md4rd)
+;;(package! noflet)
 
-(defun tls-nocheck-error-advice (orig-fun &rest args)
-  "Advise a function (with :around) not to check TLS errors.
+;;(defun tls-nocheck-error-advice (orig-fun &rest args)
+;;  "Advise a function (with :around) not to check TLS errors.
+;;
+;;ORIG-FUN - Funtion name to be advised
+;;ARGS - Arguments to function
 
-ORIG-FUN - Funtion name to be advised
-ARGS - Arguments to function
-
-Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice."
-  (let ((gnutls-verify-error nil))
-    (apply orig-fun args)))
+;;Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice."
+;;  (let ((gnutls-verify-error nil))
+;;    (apply orig-fun args)))
 
 ;; (use-package! elpher
 ;;  :config
