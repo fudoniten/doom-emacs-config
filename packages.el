@@ -14,7 +14,7 @@
 (package! edit-server)
 (package! ivy-prescient)
 (package! ace-jump-mode)
-(package! md4rd)
+;;(package! md4rd)
 (package! noflet)
 
 (defun tls-nocheck-error-advice (orig-fun &rest args)
