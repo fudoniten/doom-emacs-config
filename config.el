@@ -131,7 +131,9 @@
 (setq exec-path (remove-duplicates (append (get-bash-path) exec-path)
                                    :test #'equal))
 
-(let ((site-dir (expand-file-name ".doom.d/site.d/")))
+(let ((site-dir (if (getenv "DOOM_EMACS_SITE_PATH")
+                    (getenv "DOOM_EMACS_SITE_PATH")
+                    (expand-file-name ".doom.d/site.d/"))))
   (let ((configs (filter (lambda (name)
                            (not (or (string-match "~$" name)
                                     (string-match "^[.]" name))))
