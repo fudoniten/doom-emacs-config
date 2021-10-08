@@ -604,7 +604,7 @@
       "C-A"     #'beginning-of-line
       "C-e"     #'end-of-line
       "C-."     #'ace-jump-mode
-      "M-."     #'avy-goto-char
+      "M-."     #'embark-act
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
       "C-M-p"   #'mc/mark-previous-like-this

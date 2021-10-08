@@ -17,6 +17,12 @@
 ;;(package! md4rd)
 (package! noflet)
 
+(use-package! marginalia
+  :config
+  (marginalia-mode))
+
+(use-package embark)
+
 (defun tls-nocheck-error-advice (orig-fun &rest args)
   "Advise a function (with :around) not to check TLS errors.
 
