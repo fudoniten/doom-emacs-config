@@ -17,6 +17,8 @@
 ;;(package! md4rd)
 (package! noflet)
 
+(package! graphviz-dot-mode)
+
 (use-package! marginalia
   :config
   (marginalia-mode))
