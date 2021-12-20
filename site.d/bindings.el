@@ -608,7 +608,8 @@
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
       "C-M-p"   #'mc/mark-previous-like-this
-      "C-M-n"   #'mc/mark-next-like-this)
+      "C-M-n"   #'mc/mark-next-like-this
+      "M-n"     #'mc/mark-next-lines)
 
 (global-unset-key (kbd "<down-mouse-1>"))
 (global-unset-key (kbd "<mouse-1>"))
