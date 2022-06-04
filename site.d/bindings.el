@@ -575,13 +575,14 @@
       ;;; smartparens
       (:after smartparens
         :map smartparens-mode-map
-        "C-M-a"     #'sp-beginning-of-sexp
-        "C-M-e"     #'sp-end-of-sexp
-        "C-M-f"     #'sp-forward-sexp
-        "C-M-b"     #'sp-backward-sexp
-        "C-M-d"     #'sp-splice-sexp
-        "C-M-k"     #'sp-kill-sexp
-        "C-M-t"     #'sp-transpose-sexp)
+        "C-M-a"         #'sp-beginning-of-sexp
+        "C-M-e"         #'sp-end-of-sexp
+        "C-M-f"         #'sp-forward-sexp
+        "C-M-b"         #'sp-backward-sexp
+        "C-M-d"         #'sp-splice-sexp
+        "C-M-k"         #'sp-kill-sexp
+        "C-M-t"         #'sp-transpose-sexp
+        (kbd "<C-M-backspace>") #'sp-backward-kill-sexp)
 
       ;;; treemacs
       (:when (featurep! :ui treemacs)
@@ -610,7 +611,8 @@
       "C-M-p"   #'mc/mark-previous-like-this
       "C-M-n"   #'mc/mark-next-like-this\
       "M-p"     #'mc/mark-previous-lines
-      "M-n"     #'mc/mark-next-lines)
+      "M-n"     #'mc/mark-next-lines
+      (kbd "<C-M-backspace>") #'backward-kill-sexp)
 
 (global-unset-key (kbd "<down-mouse-1>"))
 (global-unset-key (kbd "<mouse-1>"))
