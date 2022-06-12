@@ -7,9 +7,9 @@
       doom-localleader-alt-key "C-c l")
 
 ;; persp-mode and projectile in different prefixes
-(setq persp-keymap-prefix (kbd "C-c w"))
-(after! projectile
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
+;;(setq persp-keymap-prefix (kbd "C-c w"))
+;;(after! projectile
+;;  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
 
 
 ;;
@@ -615,10 +615,10 @@
       "M-n"     #'mc/mark-next-lines
       [C-M-backspace] #'backward-kill-sexp)
 
-(global-unset-key (kbd "<down-mouse-1>"))
-(global-unset-key (kbd "<mouse-1>"))
-(global-unset-key (kbd "<down-mouse-3>"))
-(global-unset-key (kbd "<mouse-3>"))
+(global-unset-key [down-mouse-1])
+(global-unset-key [mouse-1])
+(global-unset-key [down-mouse-2])
+(global-unset-key [mouse-2])
 
 (provide 'bindings)
 ;;; bindings.el ends here
