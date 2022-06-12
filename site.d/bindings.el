@@ -582,7 +582,8 @@
         "C-M-d"         #'sp-splice-sexp
         "C-M-k"         #'sp-kill-sexp
         "C-M-t"         #'sp-transpose-sexp
-        (kbd "<C-M-backspace>") #'sp-backward-kill-sexp)
+        [C-M-backspace] #'sp-backward-kill-sexp
+        )
 
       ;;; treemacs
       (:when (featurep! :ui treemacs)
@@ -612,7 +613,7 @@
       "C-M-n"   #'mc/mark-next-like-this\
       "M-p"     #'mc/mark-previous-lines
       "M-n"     #'mc/mark-next-lines
-      (kbd "<C-M-backspace>") #'backward-kill-sexp)
+      [C-M-backspace] #'backward-kill-sexp)
 
 (global-unset-key (kbd "<down-mouse-1>"))
 (global-unset-key (kbd "<mouse-1>"))
