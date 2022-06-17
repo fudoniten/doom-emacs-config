@@ -1,3 +1,4 @@
+
 ;; -*- no-byte-compile: t; -*-
 ;;; $DOOMDIR/packages.el
 
@@ -16,6 +17,7 @@
 (package! ace-jump-mode)
 ;;(package! md4rd)
 (package! noflet)
+(package! org-roam)
 
 (package! graphviz-dot-mode)
 
