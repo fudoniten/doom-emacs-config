@@ -18,14 +18,19 @@
 ;;(package! md4rd)
 (package! noflet)
 (package! org-roam)
+(package! flycheck-clj-kondo)
+
+;; Not sure if this is really needed...
+(add-hook! clojure-mode
+           (require 'flycheck-clj-kondo))
 
 (package! graphviz-dot-mode)
 
-(use-package! marginalia
+(package! marginalia
   :config
   (marginalia-mode))
 
-(use-package embark)
+(package! embark)
 
 (defun tls-nocheck-error-advice (orig-fun &rest args)
   "Advise a function (with :around) not to check TLS errors.
@@ -37,7 +42,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
   (let ((gnutls-verify-error nil))
     (apply orig-fun args)))
 
-(use-package! elpher
+(package! elpher
   :config
   (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
 
