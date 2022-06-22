@@ -26,7 +26,7 @@
 
 (package! graphviz-dot-mode)
 
-(package! marginalia
+(use-package marginalia
   :config
   (marginalia-mode))
 
@@ -42,7 +42,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
   (let ((gnutls-verify-error nil))
     (apply orig-fun args)))
 
-(package! elpher
+(use-package elpher
   :config
   (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
 
