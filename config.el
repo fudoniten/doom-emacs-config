@@ -29,7 +29,9 @@
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
-(let* ((org-dir (file-truename "~/Notes"))
+(let* ((org-dir (if-let ((org-env-dir (getenv "EMACS_ORG_DIRECTORY")))
+                    (file-truename org-env-dir)
+                    (file-truename "~/Notes")))
        (roam-dir (format "%s/roam" org-dir)))
   (make-directory roam-dir 'parents)
   (setq org-directory org-dir)
