@@ -142,6 +142,8 @@
   (let (org-log-done org-log-states)   ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
+(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
+
 (let ((site-dir (if (getenv "DOOM_EMACS_SITE_PATH")
                     (getenv "DOOM_EMACS_SITE_PATH")
                     (expand-file-name ".doom.d/site.d/"))))
