@@ -131,6 +131,11 @@
 (setq exec-path (remove-duplicates (append (get-bash-path) exec-path)
                                    :test #'equal))
 
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
 (let ((site-dir (if (getenv "DOOM_EMACS_SITE_PATH")
                     (getenv "DOOM_EMACS_SITE_PATH")
                     (expand-file-name ".doom.d/site.d/"))))
