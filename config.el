@@ -25,7 +25,8 @@
 ;; There are two ways to load a theme. Both assume the theme is installed and
 ;; available. You can either set `doom-theme' or manually load a theme with the
 ;; `load-theme' function. This is the default:
-(setq doom-theme 'doom-snazzy)
+;;(setq doom-theme 'doom-snazzy)
+(setq doom-theme 'doom-tokyo-night)
 
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
@@ -136,6 +137,13 @@
 
 (setq exec-path (remove-duplicates (append (get-bash-path) exec-path)
                                    :test #'equal))
+
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
+(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
 (let ((site-dir (if (getenv "DOOM_EMACS_SITE_PATH")
                     (getenv "DOOM_EMACS_SITE_PATH")
