@@ -407,6 +407,7 @@
         :desc "Edit lines"         "l"         #'mc/edit-lines
         :desc "Mark next"          "n"         #'mc/mark-next-like-this
         :desc "Unmark next"        "N"         #'mc/unmark-next-like-this
+        :desc "Mark next word"     "w"         #'mc/mark-next-like-this-word
         :desc "Mark previous"      "p"         #'mc/mark-previous-like-this
         :desc "Unmark previous"    "P"         #'mc/unmark-previous-like-this
         :desc "Mark all"           "t"         #'mc/mark-all-like-this
