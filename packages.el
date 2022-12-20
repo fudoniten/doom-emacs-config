@@ -11,7 +11,7 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ; (package! some-package)
 
-;;(package! elpher)
+(package! elpher)
 (package! edit-server)
 (package! ivy-prescient)
 (package! ace-jump-mode)
