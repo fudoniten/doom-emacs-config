@@ -19,6 +19,7 @@
 (package! noflet)
 (package! org-roam)
 (package! flycheck-clj-kondo)
+(package! org-roam)
 
 (package! pylint)
 
