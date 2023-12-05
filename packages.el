@@ -20,9 +20,13 @@
 (package! org-roam)
 (package! flycheck-clj-kondo)
 
+(package! pylint)
+(package! flake8)
+
+
 ;; Not sure if this is really needed...
 (add-hook! clojure-mode
-           (require 'flycheck-clj-kondo))
+  (require 'flycheck-clj-kondo))
 
 (package! graphviz-dot-mode)
 
