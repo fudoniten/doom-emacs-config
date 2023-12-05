@@ -21,7 +21,6 @@
 (package! flycheck-clj-kondo)
 
 (package! pylint)
-(package! flake8)
 
 
 ;; Not sure if this is really needed...
