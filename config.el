@@ -157,7 +157,7 @@
         (if (or (file-regular-p full-file) (file-symlink-p full-file))
           (progn (message "Loading file %s" full-file)
                  (load full-file))
-;;           (message "Skipping invalid file %s" full-file))))))
+           (message "Skipping invalid file %s" full-file))))))
 
 (let ((local-dir (if (getenv "DOOM_EMACS_LOCAL_PATH")
                     (getenv "DOOM_EMACS_LOCAL_PATH")
