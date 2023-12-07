@@ -2,7 +2,7 @@
 
 (require 'dash)
 (require 's)
-(require 'cl-lib)
+;; (require 'cl-lib)
 ;; (eval-when-compile
 ;;   ;; (require 'eshell)
 ;;   (require 'cl-lib)
