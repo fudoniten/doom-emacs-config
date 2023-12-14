@@ -36,6 +36,8 @@
 
 (package! embark)
 
+(package! chatgpt-shell)
+
 (defun tls-nocheck-error-advice (orig-fun &rest args)
   "Advise a function (with :around) not to check TLS errors.
 
