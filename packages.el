@@ -15,11 +15,12 @@
 (package! edit-server)
 (package! ivy-prescient)
 (package! ace-jump-mode)
-;;(package! md4rd)
+(package! md4rd)
 (package! noflet)
 (package! org-roam)
 (package! flycheck-clj-kondo)
 (package! org-roam)
+(package! ox-gemini)
 
 (package! pylint)
 
