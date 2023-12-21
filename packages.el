@@ -24,15 +24,13 @@
 
 (package! pylint)
 
-
 ;; Not sure if this is really needed...
 (add-hook! clojure-mode
   (require 'flycheck-clj-kondo))
 
 (package! graphviz-dot-mode)
 
-(use-package marginalia
-  :config
+(after! marginalia
   (marginalia-mode))
 
 (package! embark)
@@ -49,14 +47,15 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
   (let ((gnutls-verify-error nil))
     (apply orig-fun args)))
 
-(use-package elpher
-  :config
+(after! elpher
+  ;; :config
   (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
 
 (when (and (package! eglot) (package! nix-mode))
-  (use-package eglot
-    :config (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
-    :hook   (nix-mode . eglot-ensure)))
+  (package! eglot)
+  (after! eglot
+	  (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
+	  (add-hook nix-mode 'eglot-ensure)))
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
