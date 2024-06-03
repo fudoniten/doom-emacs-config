@@ -14,7 +14,7 @@
 (package! elpher)
 (package! edit-server)
 (package! ivy-prescient)
-(package! ace-jump-mode)
+; (package! ace-jump-mode)
 (package! noflet)
 (package! org-roam)
 (package! flycheck-clj-kondo)
