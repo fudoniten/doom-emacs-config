@@ -42,7 +42,7 @@
 
       :desc "Jump to character"           "."   #'avy-goto-char-timer
       :desc "Jump to line"                ","   #'avy-goto-line
-
+      :desc "Open eshell here"            "!"   #'eshell-here
 
 ;;; <leader> V --- views
       (:prefix-map ("V" . "views")
