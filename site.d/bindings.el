@@ -43,7 +43,11 @@
       :desc "Increase font size"          "+"   #'text-scale-increase
       :desc "Decrease font size"          "-"   #'text-scale-decrease
 
-      ;;; <leader> V --- views
+      :desc "Jump to character"           "."   #'avy-goto-char-timer
+      :desc "Jump to line"                ","   #'avy-goto-line
+      :desc "Open eshell here"            "!"   #'eshell-here
+
+;;; <leader> V --- views
       (:prefix-map ("V" . "views")
        :desc "Add view"               "v"   #'ivy-push-view
        :desc "Pop view"               "p"   #'ivy-pop-view)
