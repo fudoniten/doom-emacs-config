@@ -25,6 +25,9 @@
 
       ;; :desc "Search buffer"               "s"   #'counsel-grep-or-swiper
 
+      :desc "Search buffer with swiper"   "s"   #'swiper
+      :desc "Search buffer with swiper"   "C-s" #'swiper
+
       :desc "Evaluate line/region"        "e"   #'+eval/line-or-region
 
       (:prefix ("l" . "<localleader>")) ; bound locally
@@ -602,11 +605,12 @@
         "C-a C-u" #'+fold/open-all)))
 
 (map! "M-g"     #'goto-line
+      "C-s"     #'swiper
       "C-x C-m" #'execute-extended-command
       "C-a"     #'beginning-of-line-text
       "C-A"     #'beginning-of-line
       "C-e"     #'end-of-line
-      "C-."     #'ace-jump-mode
+      "C-."     #'avy-goto-char-timer
       "M-."     #'embark-act
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
