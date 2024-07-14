@@ -153,6 +153,10 @@
 
 (add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
+(dolist (snip-dir yas-snippet-dirs)
+  (when (not (file-directory-p snip-dir))
+    (make-directory snip-dir t)))
+
 (defun load-configuration-directory (config-dir)
   "Load all configuration files from the given `CONFIG-DIR' if it exists."
   (when (stringp config-dir)
