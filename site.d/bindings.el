@@ -614,6 +614,7 @@
       "C-M-n"   #'mc/mark-next-like-this\
       "M-p"     #'mc/mark-previous-lines
       "M-n"     #'mc/mark-next-lines
+      "C-x b"   #'ivy-switch-buffer
       [C-M-backspace] #'backward-kill-sexp)
 
 (global-unset-key [down-mouse-1])
