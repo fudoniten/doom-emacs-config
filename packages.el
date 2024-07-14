@@ -14,18 +14,12 @@
 (package! elpher)
 (package! edit-server)
 (package! ivy-prescient)
-(package! ace-jump-mode)
 (package! noflet)
 (package! org-roam)
-(package! flycheck-clj-kondo)
+;; (package! flycheck-clj-kondo)
 (package! org-roam)
-(package! ox-gemini)
 
-(package! pylint)
-
-;; Not sure if this is really needed...
-(add-hook! clojure-mode
-  (require 'flycheck-clj-kondo))
+;; (package! pylint)
 
 (package! graphviz-dot-mode)
 
