@@ -169,6 +169,7 @@
                 (message "Skipping invalid file %s" full-file)))))
       (message "Skipping nonexistent config directory %s" config-dir))))
 
+(load-configuration-directory (expand-file-name "site.d/" (file-name-directory (or load-file-name (buffer-file-name)))))
 (load-configuration-directory (getenv "DOOM_EMACS_SITE_PATH"))
 (load-configuration-directory (getenv "DOOM_EMACS_LOCAL_PATH"))
 (load-configuration-directory (expand-file-name "doom-local/" (getenv "XDG_CONFIG_HOME")))
