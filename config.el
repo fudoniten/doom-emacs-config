@@ -181,23 +181,26 @@
 ;; AVY
 ;;;;;;;;;;
 
-(defvar fudo--avy-hydra-point nil
-  "A point, set by avy, for hydra to use when called.")
+(defvar fudo--avy-hydra-func nil
+  "A variable to hold the command to be executed by Avy.")
 
 (defun kill-thing-at-point (thing)
   (lambda (pt)
-    (save-excursion
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt))
-      (kill-region start end))
+    (save-mark-and-excursion
+      (message "going to point %s" pt)
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+        (kill-region start end)))
     (select-window
      (cdr (ring-ref avy-ring 0)))
     t))
 
 (defun move-thing-at-point (thing)
   (lambda (pt)
-    (save-excursion
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt))
-      (kill-region start end))
+    (save-mark-and-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+        (kill-region start end)))
     (select-window
      (cdr (ring-ref avy-ring 0)))
     (yank)
@@ -205,24 +208,28 @@
 
 (defun fudo--avy-wrap-action (f)
   "Take a function F and call it with the point specified by Avy."
-  (lambda () (funcall f fudo--avy-hydra-point)))
+  (message "calling with point %s!" fudo--avy-hydra-point)
+  (funcall f fudo--avy-hydra-point)
+  (setq fudo--avy-hydra-point nil))
 
 (defun copy-thing-at-point (thing)
   (lambda (pt)
-    (save-excursion
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt))
-      (let ((obj (buffer-substring-no-properties start end)))
-        (kill-new obj)))
+    (save-mark-and-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+        (let ((obj (buffer-substring-no-properties start end)))
+          (kill-new obj))))
     (select-window
      (cdr (ring-ref avy-ring 0)))
     t))
 
 (defun yank-thing-at-point (thing)
   (lambda (pt)
-    (save-excursion
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt))
-      (let ((obj (buffer-substring-no-properties start end)))
-        (kill-new obj)))
+    (save-mark-and-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+        (let ((obj (buffer-substring-no-properties start end)))
+          (kill-new obj))))
     (select-window
      (cdr (ring-ref avy-ring 0)))
     (yank)
@@ -230,8 +237,10 @@
 
 (defun comment-thing-at-point (thing)
   (lambda (pt)
-    (save-excursion
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt)
+    (message "GOT THE POINT!")
+    (save-mark-and-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
         (comment-region start end)))
     (select-window
      (cdr (ring-ref avy-ring 0)))
@@ -240,11 +249,30 @@
 
 (defun mark-thing-at-point (thing)
   (lambda (pt)
-    (cl-destructuring-bind (start . end) (bounds-of-thing-at-point pt)
-      (push-mark start nil t)
-      (goto-char end)
-      (activate-mark))
+    (save-mark-and-excursion
+      (goto-char pt)
+      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+        (push-mark start nil t)
+        (goto-char end)
+        (activate-mark)))
     t))
+
+(defun swap-thing-at-point (thing)
+  (lambda (pt)
+    (save-mark-and-excursion
+      (let ((start (point-marker))
+            (src)
+            (tgt))
+        (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+          (kill-region start end)
+          (setq src (current-kill 0)))
+        (goto-char pt)
+        (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+          (kill-region start end)
+          (setq tgt (current-kill 0))
+          (insert src))
+        (goto-char start)
+        (insert tgt)))))
 
 (defhydra hydra-action-kill (:color red :hint nil)
   "Avy kill"
@@ -321,26 +349,60 @@
   ("u" (fudo--avy-wrap-action (mark-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (mark-thing-at-point 'word))      "word"))
 
+(defhydra hydra-action-swap (:color green :hint nil)
+  "Avy swap object"
+  ("l" (fudo--avy-wrap-action (swap-thing-at-point 'line))      "line")
+  ("p" (fudo--avy-wrap-action (swap-thing-at-point 'paragraph)) "paragraph")
+  ("s" (fudo--avy-wrap-action (swap-thing-at-point 'sentence))  "sentence")
+  ("S" (fudo--avy-wrap-action (swap-thing-at-point 'sexp))      "sexp")
+  ("w" (fudo--avy-wrap-action (swap-thing-at-point 'word))      "word"))
+
 (defun fudo--avy-call-with-point (f)
   (lambda (pt)
-    (unwind-protect
-        (progn (setq fudo--avy-hydra-point pt)
-               (funcall f))
-      (setq fudo--avy-hydra-point nil))))
+    (message "Saving point: %s" pt)
+    (setq fudo--avy-hydra-point pt)
+    (funcall f)))
 
 (defun zap-to-point (pt)
   (kill-region (point) pt))
 
-(setf (alist-get ?j avy-dispatch-alist) #'avy-jump
-      (alist-get ?c avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-comment/body)
-      (alist-get ?C avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-copy/body)
-      (alist-get ?h avy-dispatch-alist) #'helpful-at-point
-      (alist-get ?k avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-kill/body)
-      (alist-get ?m avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-move/body)
-      (alist-get ?r avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-region/body)
-      (alist-get ?y avy-dispatch-alist) (fudo--avy-call-with-point #'hydra-action-yank/body)
-      (alist-get ?z avy-dispatch-alist) #'zap-to-point)
+(defun avy-action-comment (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-comment/body))
 
+(defun avy-action-copy (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-copy/body))
+
+(defun avy-action-kill (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-kill/body))
+
+(defun avy-action-move (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-move/body))
+
+(defun avy-action-region (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-region/body))
+
+(defun avy-action-swap (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-swap/body))
+
+(defun avy-action-yank (pt)
+  (setq fudo--avy-hydra-point pt)
+  (hydra-action-yank/body))
+
+(setf (alist-get ?c avy-dispatch-alist) #'avy-action-comment
+      (alist-get ?C avy-dispatch-alist) #'avy-action-copy
+      (alist-get ?H avy-dispatch-alist) #'helpful-at-point
+      (alist-get ?K avy-dispatch-alist) #'avy-action-kill
+      (alist-get ?m avy-dispatch-alist) #'avy-action-move
+      (alist-get ?r avy-dispatch-alist) #'avy-action-region
+      (alist-get ?S avy-dispatch-alist) #'avy-action-swap
+      (alist-get ?y avy-dispatch-alist) #'avy-action-yank
+      (alist-get ?z avy-dispatch-alist) #'zap-to-point)
 
 (provide 'config)
 
