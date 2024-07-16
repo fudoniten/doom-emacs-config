@@ -385,6 +385,14 @@ even beep.)"
        (setenv varname val)
        val))
 
+(defun avy-action-kill-whole-line (pt)
+  (save-excursion
+    (goto-char pt)
+    (kill-whole-line))
+  (select-window
+   (cdr (ring-ref avy-ring 0)))
+  t)
+
 (provide 'site-functions)
 
 ;; site-functions.el ends here

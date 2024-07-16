@@ -25,7 +25,8 @@
 
       :desc "Search buffer"               "s"   #'counsel-grep-or-swiper
 
-      :desc "Avy jump to char"            "."   #'avy-goto-char
+      :desc "Search buffer with swiper"   "s"   #'swiper
+      :desc "Search buffer with swiper"   "C-s" #'swiper
 
       :desc "Evaluate line/region"        "e"   #'+eval/line-or-region
 
@@ -41,6 +42,10 @@
 
       :desc "Increase font size"          "+"   #'text-scale-increase
       :desc "Decrease font size"          "-"   #'text-scale-decrease
+
+      :desc "Jump to character"           "."   #'avy-goto-char
+      :desc "Jump to line"                ","   #'avy-goto-line
+      :desc "Open eshell here"            "!"   #'eshell-here
 
 ;;; <leader> V --- views
       (:prefix-map ("V" . "views")
@@ -604,11 +609,12 @@
         "C-a C-u" #'+fold/open-all)))
 
 (map! "M-g"     #'goto-line
+      "C-s"     #'swiper
       "C-x C-m" #'execute-extended-command
       "C-a"     #'beginning-of-line-text
       "C-A"     #'beginning-of-line
       "C-e"     #'end-of-line
-      "C-."     #'ace-jump-mode
+      "C-."     #'avy-goto-char-timer
       "M-."     #'embark-act
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
