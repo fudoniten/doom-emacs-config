@@ -3,6 +3,9 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
+;; Causing errors because it's missing
+(setq native-comp-deferred-compilation-deny-list nil)
+
 ;; Some functionality uses this to identify you, e.g. GPG configuration, email
 ;; clients, file templates and snippets.
 (setq user-full-name "Niten"
@@ -84,19 +87,25 @@
         (bury-buffer)
       ad-do-it)))
 
+(defvar *persistent-scratch-location*
+  (expand-file-name "emacs/persistent-scratch.el" (getenv "XDG_STATE_HOME")))
+
 (defun save-persistent-scratch ()
   "Write the contents of *scratch* to the file name
 `persistent-scratch-file-name'."
   (with-current-buffer (get-buffer-create "*scratch*")
-    (write-region (point-min) (point-max) "~/.emacs.d/persistent-scratch.el")))
+    (let ((scratch-directory (file-name-directory *persistent-scratch-location*)))
+      (when (not (file-directory-p scratch-directory))
+        (make-directory scratch-directory t)))
+    (write-region (point-min) (point-max) *persistent-scratch-location*)))
 
 (defun load-persistent-scratch ()
   "Load the contents of `persistent-scratch-file-name' into the
   scratch buffer, clearing its contents first."
-  (when (file-exists-p "~/.emacs.d/persistent-scratch.el")
+  (when (file-exists-p *persistent-scratch-location*)
     (with-current-buffer (get-buffer "*scratch*")
       (delete-region (point-min) (point-max))
-      (insert-file-contents "~/.emacs.d/persistent-scratch.el"))))
+      (insert-file-contents *persistent-scratch-location*))))
 
 (add-hook 'after-init-hook 'load-persistent-scratch)
 (add-hook 'kill-emacs-hook 'save-persistent-scratch)
@@ -144,34 +153,29 @@
 
 (add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
-(let ((site-dir (if (getenv "DOOM_EMACS_SITE_PATH")
-                    (getenv "DOOM_EMACS_SITE_PATH")
-                    (expand-file-name ".doom.d/site.d/"))))
-  (let ((configs (filter (lambda (name)
-                           (not (or (string-match "~$" name)
-                                    (string-match "^[.]" name))))
-                         (directory-files site-dir))))
-    (dolist (file configs)
-      (let ((full-file (expand-file-name file site-dir)))
-        (if (or (file-regular-p full-file) (file-symlink-p full-file))
-          (progn (message "Loading file %s" full-file)
-                 (load full-file))
-           (message "Skipping invalid file %s" full-file))))))
+(setq yas-snippet-dirs '())
 
-(let ((local-dir (if (getenv "DOOM_EMACS_LOCAL_PATH")
-                    (getenv "DOOM_EMACS_LOCAL_PATH")
-                    (expand-file-name ".local/emacs.d/" (getenv "HOME")))))
-  (when (file-exists-p local-dir)
-    (let ((configs (filter (lambda (name)
-                             (not (or (string-match "~$" name)
-                                      (string-match "^[.]" name))))
-                           (directory-files local-dir))))
-      (dolist (file configs)
-        (let ((full-file (expand-file-name file local-dir)))
-          (if (or (file-regular-p full-file) (file-symlink-p full-file))
-              (progn (message "Loading file %s" full-file)
-                     (load full-file))
-            (message "Skipping invalid file %s" full-file)))))))
+(defun load-configuration-directory (config-dir)
+  "Load all configuration files from the given `CONFIG-DIR' if it exists."
+  (when (stringp config-dir)
+    (if (file-directory-p config-dir)
+        (let ((configs (filter (lambda (name)
+                                 (not (or (string-match "~$" name)
+                                          (string-match "^[.]" name))))
+                               (directory-files config-dir))))
+          (dolist (file configs)
+            (let ((full-file (expand-file-name file config-dir)))
+              (if (or (file-regular-p full-file) (file-symlink-p full-file))
+                  (progn (message "Loading file %s" full-file)
+                         (load full-file))
+                (message "Skipping invalid file %s" full-file)))))
+      (message "Skipping nonexistent config directory %s" config-dir))))
+
+(load-configuration-directory (expand-file-name "site.d/" (file-name-directory (or load-file-name (buffer-file-name)))))
+(load-configuration-directory (getenv "DOOM_EMACS_SITE_PATH"))
+(load-configuration-directory (getenv "DOOM_EMACS_LOCAL_PATH"))
+(load-configuration-directory (expand-file-name "doom-local/" (getenv "XDG_CONFIG_HOME")))
+(load-configuration-directory (expand-file-name "emacs-local/" (getenv "XDG_CONFIG_HOME")))
 
 ;;;;;;;;;;
 ;; AVY
