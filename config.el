@@ -34,7 +34,7 @@
 ;; change `org-directory'. It must be set before org loads!
 (let* ((org-dir (if-let ((org-env-dir (getenv "EMACS_ORG_DIRECTORY")))
                     (file-truename org-env-dir)
-                    (file-truename "~/Notes")))
+                  (file-truename "~/Notes")))
        (roam-dir (format "%s/roam" org-dir)))
   (make-directory roam-dir 'parents)
   (setq org-directory org-dir)
@@ -134,8 +134,8 @@
 
 (add-hook 'eshell-mode-hook
           (lambda ()
-           (setenv "PAGER" "cat")
-           (setenv "EDITOR" "emacsclient")))
+            (setenv "PAGER" "cat")
+            (setenv "EDITOR" "emacsclient")))
 
 (defun get-bash-path ()
   "Return paths from the bash PATH."
@@ -143,8 +143,12 @@
          (path-dirs (split-string bash-path ":")))
     (filter #'file-directory-p path-dirs)))
 
-(setq exec-path (remove-duplicates (append (get-bash-path) exec-path)
-                                   :test #'equal))
+(setq exec-path
+      (filter
+       #'file-directory-p
+       (remove-duplicates
+        (append (get-bash-path) exec-path)
+        :test #'equal)))
 
 (defun org-summary-todo (n-done n-not-done)
   "Switch entry to DONE when all subentries are done, to TODO otherwise."

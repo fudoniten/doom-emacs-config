@@ -54,7 +54,7 @@
 (defun filter (condp lst)
   "Remove all elements not matching CONDP from LST."
   (delq nil
-	      (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
+	(mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 ;; Therefore
 ;;
@@ -263,9 +263,6 @@
              (string-match "^/" p))
            (split-string path ":"))))
 
-(defun get-path ()
-  (split-string (getenv "PATH") ":"))
-
 (cl-defun string-join (lst &optional (chr ""))
   (mapconcat 'identity lst chr))
 
@@ -382,8 +379,8 @@ even beep.)"
 
 (defun intern-bash-env-var (varname)                                                                                                                                                                                                                                                                                                                                                   
   (let ((val (bash-env-var varname)))
-       (setenv varname val)
-       val))
+    (setenv varname val)
+    val))
 
 (defun avy-action-kill-whole-line (pt)
   (save-excursion
