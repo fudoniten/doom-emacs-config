@@ -19,6 +19,7 @@
 ;; (package! flycheck-clj-kondo)
 (package! org-roam)
 (package! hass)
+(package! kubernetes)
 
 ;; (package! pylint)
 
