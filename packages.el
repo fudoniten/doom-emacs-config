@@ -20,6 +20,7 @@
 (package! org-roam)
 (package! hass)
 (package! kubernetes)
+(package! restclient-mode)
 
 ;; (package! pylint)
 
