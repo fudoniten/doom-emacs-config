@@ -21,6 +21,7 @@
 (package! hass)
 (package! kubernetes)
 (package! restclient)
+(package! gptel :recipe (:nonrecursive t))
 
 ;; (package! pylint)
 
