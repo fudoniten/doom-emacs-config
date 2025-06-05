@@ -62,6 +62,12 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+
+(use-package aider
+  :config
+  (setq aider-args '("--model" "sonnet"))
+  (require 'aider-doom))
+
 (require 'cl)
 
 (load! "site-functions.el")
