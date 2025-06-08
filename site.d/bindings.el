@@ -620,5 +620,15 @@
 (global-unset-key [down-mouse-2])
 (global-unset-key [mouse-2])
 
+(map! :map paredit-mode-map
+      "C-c }" #'paredit-forward-barf-sexp
+      "C-c {" #'paredit-backward-barf-sexp
+      "C-}"  #'paredit-forward-barf-sexp
+      "C-{"  #'paredit-backward-barf-sexp
+      "C-c )" #'paredit-forward-slurp-sexp
+      "C-c (" #'paredit-backward-slurp-sexp
+      "C-)"  #'paredit-forward-slurp-sexp
+      "C-("  #'paredit-backward-slurp-sexp)
+
 (provide 'bindings)
 ;;; bindings.el ends here
