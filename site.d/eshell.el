@@ -77,19 +77,6 @@ directory to make multiple eshell windows easier."
 ;; | '_ \| '__/ _ \| '_ ` _ \| '_ \| __|
 ;; | |_) | | | (_) | | | | | | |_) | |_
 ;; | .__/|_|  \___/|_| |_| |_| .__/ \__|
-;; | |                       | |
-;; |_|                       |_|
-;;
-
-;; http://www.modernemacs.com/post/custom-eshell/
-
-
-
-;;   ___ _ ____   __
-;;  / _ \ '_ \ \ / /
-;; |  __/ | | \ V /
-;;  \___|_| |_|\_/
-
 (setenv "P4DIFF" "/usr/bin/ediff")
 (setenv "P4MERGE" "/usr/bin/ediff_merge")
 (defalias 'contracts_cli
