@@ -7,7 +7,7 @@
 ;; Created: June 08, 2025
 ;; Modified: June 08, 2025
 ;; Version: 0.0.1
-;; Keywords: abbrev bib c calendar comm convenience data docs emulations extensions faces files frames games hardware help hypermedia i18n internal languages lisp local maint mail matching mouse multimedia news outlines processes terminals tex text tools unix vc wp
+;; Keywords: keybindings, configuration, emacs, shortcuts, leader keys, doom emacs
 ;; Homepage: https://github.com/niten/avy
 ;; Package-Requires: ((emacs "24.3"))
 ;;
