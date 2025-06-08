@@ -108,6 +108,14 @@
       (kill-ring-save start (point))
       (message "Copied line"))))
 
+(defun copy-thing (begin end &optional arg)
+  "Copy text between BEGIN and END into kill-ring."
+  (save-excursion
+    (let ((start (progn (funcall begin arg) (point)))
+          (end (progn (funcall end arg) (point))))
+      (kill-ring-save start end)
+      (message "Copied text"))))
+
 (defun copy-word (&optional arg)
   "Copy words at point into kill-ring."
   (interactive "P")
