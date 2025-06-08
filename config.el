@@ -157,9 +157,9 @@
   "A variable to hold the command to be executed by Avy.")
 
 (defun kill-thing-at-point (thing)
+  "Return a lambda to kill the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
-      (message "going to point %s" pt)
       (goto-char pt)
       (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
         (kill-region start end)))
@@ -168,6 +168,7 @@
     t))
 
 (defun move-thing-at-point (thing)
+  "Return a lambda to move the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
       (goto-char pt)
@@ -185,6 +186,7 @@
   (setq fudo--avy-hydra-point nil))
 
 (defun copy-thing-at-point (thing)
+  "Return a lambda to copy the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
       (goto-char pt)
@@ -196,6 +198,7 @@
     t))
 
 (defun yank-thing-at-point (thing)
+  "Return a lambda to yank the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
       (goto-char pt)
@@ -208,18 +211,18 @@
     t))
 
 (defun comment-thing-at-point (thing)
+  "Return a lambda to comment the THING at point."
   (lambda (pt)
-    (message "GOT THE POINT!")
     (save-mark-and-excursion
       (goto-char pt)
       (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
         (comment-region start end)))
     (select-window
      (cdr (ring-ref avy-ring 0)))
-    (yank)
     t))
 
 (defun mark-thing-at-point (thing)
+  "Return a lambda to mark the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
       (goto-char pt)
@@ -230,6 +233,7 @@
     t))
 
 (defun swap-thing-at-point (thing)
+  "Return a lambda to swap the THING at point."
   (lambda (pt)
     (save-mark-and-excursion
       (let ((start (point-marker))
@@ -304,6 +308,7 @@
   ("w" (fudo--avy-wrap-action (comment-thing-at-point 'word))      "word"))
 
 (defun set-region (start end)
+  "Set the region from START to END."
   (push-mark start nil t)
   (goto-char end)
   (activate-mark)
@@ -330,39 +335,48 @@
   ("w" (fudo--avy-wrap-action (swap-thing-at-point 'word))      "word"))
 
 (defun fudo--avy-call-with-point (f)
+  "Return a lambda to call function F with the point specified by Avy."
   (lambda (pt)
     (message "Saving point: %s" pt)
     (setq fudo--avy-hydra-point pt)
     (funcall f)))
 
 (defun zap-to-point (pt)
+  "Kill the region from point to PT."
   (kill-region (point) pt))
 
 (defun avy-action-comment (pt)
+  "Invoke the comment hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-comment/body))
 
 (defun avy-action-copy (pt)
+  "Invoke the copy hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-copy/body))
 
 (defun avy-action-kill (pt)
+  "Invoke the kill hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-kill/body))
 
 (defun avy-action-move (pt)
+  "Invoke the move hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-move/body))
 
 (defun avy-action-region (pt)
+  "Invoke the region hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-region/body))
 
 (defun avy-action-swap (pt)
+  "Invoke the swap hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-swap/body))
 
 (defun avy-action-yank (pt)
+  "Invoke the yank hydra at PT."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-yank/body))
 
