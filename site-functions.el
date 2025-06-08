@@ -1,4 +1,5 @@
 ;;; site-functions.el -*- lexical-binding: t; -*-
+;; Keywords: functions, emacs, utilities, text manipulation, buffer management, shell
 
 ;;(require 'eshell)
 ;;(require 'em-dirs)

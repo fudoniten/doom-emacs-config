@@ -1,4 +1,5 @@
 ;;; eshell.el -*- lexical-binding: t; -*-
+;; Keywords: eshell, emacs, shell, commands, utilities, configuration
 
 (require 'dash)
 (require 'cl-lib)

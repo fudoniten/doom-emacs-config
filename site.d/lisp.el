@@ -1,6 +1,7 @@
 ;;; lisp.el -*- lexical-binding: t; -*-
 ;;
 ;; Common settings for Lisp modes
+;; Keywords: lisp, configuration, emacs, hooks, paredit, scheme, clojure, racket
 
 (defvar *lisp-mode-hooks* '(scheme-mode-hook
                             lisp-mode-hook
