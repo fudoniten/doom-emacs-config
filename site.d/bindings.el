@@ -600,7 +600,7 @@
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
       "C-M-p"   #'mc/mark-previous-like-this
-      "C-M-n"   #'mc/mark-next-like-this\
+      "C-M-n"   #'mc/mark-next-like-this
       "M-p"     #'mc/mark-previous-lines
       "M-n"     #'mc/mark-next-lines
       "C-x b"   #'ivy-switch-buffer
