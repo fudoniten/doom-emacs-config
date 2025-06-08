@@ -190,13 +190,6 @@
     (message "Interned bash environment variable: %s with value: %s" varname val)
     val))
 
-(defun eshell/x ()
-  "Exit eshell and close the window."
-  (insert "exit")
-  (eshell-send-input)
-  (delete-window)
-  (message "Exited eshell and closed window"))
-
 (defun ido-find-file-in-tag-files ()
   "Find a file in tag files using ido."
   (interactive)
