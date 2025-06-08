@@ -10,6 +10,7 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
+
 ;; Communication Packages
 (package! elpher)
 (package! chatgpt-shell)
