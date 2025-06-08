@@ -609,6 +609,18 @@
       "C-;"     #'kill-whitespace
       "C-!"     #'eshell-here
       "C-M-p"   #'mc/mark-previous-like-this
+      "C-c d"   #'duplicate-line
+      "C-c t"   #'toggle-comment-on-line
+      "C-c o"   #'open-line-below
+      "C-c O"   #'open-line-above
+      "C-c r"   #'rename-file-and-buffer
+      "C-c m"   #'move-buffer-file
+      "C-c u"   #'untabify-this-file
+      "C-c y"   #'yank-buffer-path
+      "C-c c"   #'copy-line
+      "C-c w"   #'copy-word
+      "C-c n"   #'open-and-indent-line
+      "C-c N"   #'open-and-indent-previous-line
       "C-M-n"   #'mc/mark-next-like-this
       "M-p"     #'mc/mark-previous-lines
       "M-n"     #'mc/mark-next-lines
