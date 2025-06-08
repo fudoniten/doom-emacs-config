@@ -3,35 +3,18 @@
 ;; Place your private configuration here! Remember, you do not need to run 'doom
 ;; sync' after modifying this file!
 
-;; Causing errors because it's missing
-(setq native-comp-deferred-compilation-deny-list nil)
-
-;; Some functionality uses this to identify you, e.g. GPG configuration, email
-;; clients, file templates and snippets.
+;; User Information
 (setq user-full-name "Niten"
       user-mail-address "niten@fudo.org")
 
-;; Doom exposes five (optional) variables for controlling fonts in Doom. Here
-;; are the three important ones:
-;;
-;; + `doom-font'
-;; + `doom-variable-pitch-font'
-;; + `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
-;;
-;; They all accept either a font-spec, font string ("Input Mono-12"), or xlfd
-;; font string. You generally only need these two:
-;; (setq doom-font (font-spec :family "monospace" :size 12 :weight 'semi-light)
-;;       doom-variable-pitch-font (font-spec :family "sans" :size 13))
+;; Compilation Settings
+(setq native-comp-deferred-compilation-deny-list nil)
 
-;; There are two ways to load a theme. Both assume the theme is installed and
-;; available. You can either set `doom-theme' or manually load a theme with the
-;; `load-theme' function. This is the default:
-;;(setq doom-theme 'doom-snazzy)
+;; Appearance
 (setq doom-theme 'doom-tokyo-night)
+(setq display-line-numbers-type t)
 
-;; If you use `org' and don't want your org files in the default location below,
-;; change `org-directory'. It must be set before org loads!
+;; Org Mode Directories
 (let* ((org-dir (if-let ((org-env-dir (getenv "EMACS_ORG_DIRECTORY")))
                     (file-truename org-env-dir)
                   (file-truename "~/Notes")))
@@ -39,10 +22,6 @@
   (make-directory roam-dir 'parents)
   (setq org-directory org-dir)
   (setq org-roam-directory roam-dir))
-
-;; This determines the style of line numbers in effect. If set to `nil', line
-;; numbers are disabled. For relative line numbers, set this to `relative'.
-(setq display-line-numbers-type t)
 
 
 ;; Here are some additional functions/macros that could help you configure Doom:
@@ -62,6 +41,7 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
+;; Packages
 (use-package transient
   :ensure t)
 
@@ -72,24 +52,74 @@
   (setq aider-args '("-4"))
   (require 'aider-doom))
 
+;; Environment
 (require 'cl)
-
 (load! "site-functions.el")
-
 (setq-default tab-width 2)
-
 (setq inferior-lisp-program "sbcl")
-
 (setq emerge-diff-options "--ignore-all-space")
-
 (setq alert-default-style 'libnotify)
-
 (setq sentence-end-double-space nil)
-
 (setq diff-switches "-u")
-
 (setq tab-always-indent t)
 
+;; Functions
+(defun filter (condp lst)
+  "Filter list LST to only those elements matching CONDP."
+  (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
+
+(defun get-bash-path ()
+  "Return paths from the bash PATH."
+  (let* ((bash-path (bash-env-var "PATH"))
+         (path-dirs (split-string bash-path ":")))
+    (filter #'file-directory-p path-dirs)))
+
+(defun org-summary-todo (n-done n-not-done)
+  "Switch entry to DONE when all subentries are done, to TODO otherwise."
+  (let (org-log-done org-log-states)   ; turn off logging
+    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
+
+(defun load-configuration-directory (config-dir)
+  "Load all configuration files from the given `CONFIG-DIR' if it exists."
+  (when (stringp config-dir)
+    (if (file-directory-p config-dir)
+        (let ((configs (filter (lambda (name)
+                                 (not (or (string-match "~$" name)
+                                          (string-match "^[.]" name))))
+                               (directory-files config-dir))))
+          (dolist (file configs)
+            (let ((full-file (expand-file-name file config-dir)))
+              (if (or (file-regular-p full-file) (file-symlink-p full-file))
+                  (progn (message "Loading file %s" full-file)
+                         (load full-file))
+                (message "Skipping invalid file %s" full-file)))))
+      (message "Skipping nonexistent config directory %s" config-dir))))
+
+;; Hooks
+(add-hook 'after-init-hook 'load-persistent-scratch)
+(add-hook 'kill-emacs-hook 'save-persistent-scratch)
+(add-hook 'eshell-mode-hook
+          (lambda ()
+            (setenv "PAGER" "cat")
+            (setenv "EDITOR" "emacsclient")))
+(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
+
+;; System Specific Settings
+(when (eq system-type 'darwin)
+  (setq mac-option-modifier 'meta)
+  (setq mac-command-modifier 'meta))
+
+(when (or (eq window-system 'x)
+          (eq window-system 'darwin))
+  (when (boundp 'edit-start-server)
+    (edit-start-server)))
+
+;; Global Modes
+(global-prettify-symbols-mode 1)
+(ivy-prescient-mode 1)
+(global-subword-mode 1)
+
+;; Scratch Buffer
 (defadvice kill-buffer (around kill-buffer-around-advice activate)
   "Bury the *scratch* buffer, but never kill it."
   (let ((buffer-to-kill (ad-get-arg 0)))
@@ -116,80 +146,6 @@
     (with-current-buffer (get-buffer "*scratch*")
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
-
-(add-hook 'after-init-hook 'load-persistent-scratch)
-(add-hook 'kill-emacs-hook 'save-persistent-scratch)
-
-(when (eq system-type 'darwin)
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'meta))
-
-(when (or (eq window-system 'x)
-          (eq window-system 'darwin))
-  (when (boundp 'edit-start-server)
-    (edit-start-server)))
-
-(global-prettify-symbols-mode 1)
-
-(ivy-prescient-mode 1)
-
-(global-subword-mode 1)
-
-(with-current-buffer (get-buffer "*scratch*")
-  (emacs-lisp-mode))
-
-(defun filter (condp lst)
-  "Filter list LST to only those elements matching CONDP."
-  (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
-
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setenv "PAGER" "cat")
-            (setenv "EDITOR" "emacsclient")))
-
-(defun get-bash-path ()
-  "Return paths from the bash PATH."
-  (let* ((bash-path (bash-env-var "PATH"))
-         (path-dirs (split-string bash-path ":")))
-    (filter #'file-directory-p path-dirs)))
-
-(setq exec-path
-      (filter
-       #'file-directory-p
-       (remove-duplicates
-        (append (get-bash-path) exec-path)
-        :test #'equal)))
-
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-
-(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
-
-(setq yas-snippet-dirs '())
-
-(defun load-configuration-directory (config-dir)
-  "Load all configuration files from the given `CONFIG-DIR' if it exists."
-  (when (stringp config-dir)
-    (if (file-directory-p config-dir)
-        (let ((configs (filter (lambda (name)
-                                 (not (or (string-match "~$" name)
-                                          (string-match "^[.]" name))))
-                               (directory-files config-dir))))
-          (dolist (file configs)
-            (let ((full-file (expand-file-name file config-dir)))
-              (if (or (file-regular-p full-file) (file-symlink-p full-file))
-                  (progn (message "Loading file %s" full-file)
-                         (load full-file))
-                (message "Skipping invalid file %s" full-file)))))
-      (message "Skipping nonexistent config directory %s" config-dir))))
-
-(load-configuration-directory (expand-file-name "site.d/" (file-name-directory (or load-file-name (buffer-file-name)))))
-(load-configuration-directory (getenv "DOOM_EMACS_SITE_PATH"))
-(load-configuration-directory (getenv "DOOM_EMACS_LOCAL_PATH"))
-(load-configuration-directory (expand-file-name "doom-local/" (getenv "XDG_CONFIG_HOME")))
-(load-configuration-directory (expand-file-name "emacs-local/" (getenv "XDG_CONFIG_HOME")))
 
 ;;;;;;;;;;
 ;; AVY
