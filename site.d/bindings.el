@@ -268,6 +268,12 @@
        :desc "Restart & restore Emacs"      "r" #'doom/restart-and-restore
        :desc "Restart Emacs"                "R" #'doom/restart)
 
+;;; <leader> a --- aider
+      (:prefix-map ("a" . "aider")
+       :desc "Aider command 1" "1" #'aider-command-1
+       :desc "Aider command 2" "2" #'aider-command-2
+       :desc "Aider command 3" "3" #'aider-command-3)
+
 ;;; <leader> & --- snippets
       (:prefix-map ("&" . "snippets")
        :desc "New snippet"           "n" #'yas-new-snippet
