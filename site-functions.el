@@ -3,6 +3,44 @@
 ;;(require 'eshell)
 ;;(require 'em-dirs)
 
+;; Miscellaneous Useful Functions
+
+(defun duplicate-line()
+  "Duplicate the current line."
+  (interactive)
+  (let ((text (thing-at-point 'line)))
+    (save-excursion
+      (end-of-line)
+      (insert "\n" text))
+    (message "Duplicated line")))
+
+(defun toggle-comment-on-line ()
+  "Toggle comment on the current line or region."
+  (interactive)
+  (let ((start (line-beginning-position))
+        (end (line-end-position)))
+    (if (use-region-p)
+        (setq start (region-beginning)
+              end (region-end)))
+    (comment-or-uncomment-region start end)
+    (message "Toggled comment on line")))
+
+(defun open-line-below ()
+  "Open a new line below the current one and move the cursor there."
+  (interactive)
+  (end-of-line)
+  (newline-and-indent)
+  (message "Opened line below"))
+
+(defun open-line-above ()
+  "Open a new line above the current one and move the cursor there."
+  (interactive)
+  (beginning-of-line)
+  (newline)
+  (forward-line -1)
+  (indent-according-to-mode)
+  (message "Opened line above"))
+
 (provide 'site-functions)
 
 ;;; Code:
