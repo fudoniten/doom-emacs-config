@@ -10,38 +10,44 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
-
+;; Communication Packages
 (package! elpher)
+(package! chatgpt-shell)
+(package! restclient)
+
+;; Org and Note-taking
+(package! org-roam)
+
+;; Development Tools
 (package! edit-server)
 (package! ivy-prescient)
 (package! noflet)
-(package! org-roam)
-;; (package! flycheck-clj-kondo)
-(package! org-roam)
-(package! hass)
 (package! kubernetes)
-(package! restclient)
 (package! gptel :recipe (:nonrecursive t))
-
-(package! transien)
-
 (package! aider :recipe (:host github :repo "tninja/aider.el"))
-
-;; (package! pylint)
-
 (package! graphviz-dot-mode)
 
+;; Transient
+(package! transient)
+
+;; Embark
+(package! embark)
+
+;; Eglot and Nix
+(when (and (package! eglot) (package! nix-mode))
+  (after! eglot
+    (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
+    (add-hook 'nix-mode-hook 'eglot-ensure)))
+
+;; Marginalia
 (after! marginalia
   (marginalia-mode))
 
-(package! embark)
-
-(package! chatgpt-shell)
-
+;; TLS Advice
 (defun tls-nocheck-error-advice (orig-fun &rest args)
   "Advise a function (with :around) not to check TLS errors.
 
-ORIG-FUN - Funtion name to be advised
+ORIG-FUN - Function name to be advised
 ARGS - Arguments to function
 
 Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice."
@@ -49,14 +55,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
     (apply orig-fun args)))
 
 (after! elpher
-  ;; :config
   (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
-
-(when (and (package! eglot) (package! nix-mode))
-  (package! eglot)
-  (after! eglot
-    (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
-    (add-hook nix-mode 'eglot-ensure)))
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
