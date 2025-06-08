@@ -91,7 +91,9 @@
             (let ((full-file (expand-file-name file config-dir)))
               (if (or (file-regular-p full-file) (file-symlink-p full-file))
                   (progn (message "Loading file %s" full-file)
-                         (load full-file))
+                         (condition-case err
+                             (load full-file)
+                           (error (message "Error loading file %s: %s" full-file err))))
                 (message "Skipping invalid file %s" full-file)))))
       (message "Skipping nonexistent config directory %s" config-dir))))
 

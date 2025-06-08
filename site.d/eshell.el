@@ -1,6 +1,8 @@
 ;;; eshell.el -*- lexical-binding: t; -*-
 
 (require 'dash)
+(require 'cl-lib)
+(require 'message) ; For logging
 (require 's)
 (require 'cl-lib)
 
@@ -16,13 +18,21 @@
 
 
 (defun eshell/ff (file)
-  (find-file file))
+  (if (file-exists-p file)
+      (progn
+        (message "Opening file: %s" file)
+        (find-file file))
+    (message "File not found: %s" file)))
 
 ;;(defun eshell/ffow (file)
 ;;  (find-file-other-window file))
 
 (defun eshell/edit (file)
-  (find-file file))
+  (if (file-exists-p file)
+      (progn
+        (message "Editing file: %s" file)
+        (find-file file))
+    (message "File not found: %s" file)))
 
 (defun str-empty-p (str)
   (string= str ""))
@@ -33,10 +43,13 @@
 
 (defun eshell/g4d (&rest args)
   (let* ((command (mapconcat 'identity (cons "p4 g4d" args) " "))
-         (newpath (get-last-line-from-output
-                   (shell-command-to-string command))))
-    (when newpath
-      (eshell/cd (first newpath)))))
+         (output (shell-command-to-string command))
+         (newpath (get-last-line-from-output output)))
+    (if newpath
+        (progn
+          (message "Changing directory to: %s" (first newpath))
+          (eshell/cd (first newpath)))
+      (message "Failed to change directory. Command output: %s" output))))
 
 (defun eshell-here ()
   "Opens up a new shell in the directory associated with the
@@ -60,6 +73,7 @@ directory to make multiple eshell windows easier."
                    default-directory))
          (height (/ (window-total-height) 3))
          (name   (car (last (split-string parent "/" t)))))
+    (message "Opening eshell in directory: %s" parent)
     (split-window-vertically (- height))
     (other-window 1)
     (eshell "new")
