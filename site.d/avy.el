@@ -21,7 +21,7 @@
 
 
 
-(provide 'avy)
+(provide 'avy-menus)
 ;;; avy.el ends here
 ;;; avy.el -*- lexical-binding: t; -*-
 
@@ -262,4 +262,4 @@
       (alist-get ?y avy-dispatch-alist) #'avy-action-yank
       (alist-get ?z avy-dispatch-alist) #'zap-to-point)
 
-(provide 'avy)
+(provide 'avy-menus)
