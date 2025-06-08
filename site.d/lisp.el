@@ -11,8 +11,8 @@
                             clojurescript-mode-hook))
 
 (defun my-lisp-mode-hook ()
-  (paredit-mode 1)
-
+  (paredit-mode 1))
+  
 (bind-hook-to-modes 'my-lisp-mode-hook *lisp-mode-hooks*)
 
 ;;
