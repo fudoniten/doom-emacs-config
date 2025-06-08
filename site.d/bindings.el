@@ -1,48 +1,29 @@
 ;;; site.d/bindings.el -*- lexical-binding: t; -*-
 
-;;; Code
+;;; Code:
 
-;; Sensible deafult key bindings for non-evil users
+;; Sensible default key bindings for non-evil users
 (setq doom-leader-alt-key "C-c"
       doom-localleader-alt-key "C-c l")
 
-;; persp-mode and projectile in different prefixes
-;;(setq persp-keymap-prefix (kbd "C-c w"))
-;;(after! projectile
-;;  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map))
-
-
-;;
 ;;; Autoloads
-
 (autoload 'org-capture-goto-target "org-capture" nil t)
 
-
-;;
 ;;; Leader keys
-
 (map! :leader
-
       :desc "Search buffer"               "s"   #'counsel-grep-or-swiper
-
       :desc "Search buffer with swiper"   "s"   #'swiper
       :desc "Search buffer with swiper"   "C-s" #'swiper
-
       :desc "Evaluate line/region"        "e"   #'+eval/line-or-region
-
       (:prefix ("l" . "<localleader>")) ; bound locally
       (:prefix ("!" . "checkers"))      ; bound by flycheck
-
       :desc "Extended command"            "C-m" #'execute-extended-command
       :desc "Kill whitespace"             ";"   #'kill-whitespace
       :desc "Toggle readonly mode"        "R"   #'read-only-mode
-
       :desc "Open previous line"          "C-p" #'open-and-indent-previous-line
       :desc "Open next line"              "C-n" #'open-and-indent-line
-
       :desc "Increase font size"          "+"   #'text-scale-increase
       :desc "Decrease font size"          "-"   #'text-scale-decrease
-
       :desc "Jump to character"           "."   #'avy-goto-char
       :desc "Jump to line"                ","   #'avy-goto-line
       :desc "Open eshell here"            "!"   #'eshell-here
@@ -91,26 +72,26 @@
 
 ;;; <leader> f --- file
       (:prefix-map ("f" . "file")
-                   (:when (modulep! :tools editorconfig)
-                     :desc "Open project editorconfig"  "c"   #'editorconfig-find-current-editorconfig)
-                   :desc "Copy this file"              "C"   #'doom/copy-this-file
-                   :desc "Find directory"              "d"   #'dired
-                   :desc "Delete this file"            "D"   #'doom/delete-this-file
-                   :desc "Find file in emacs.d"        "e"   #'doom/find-file-in-emacsd
-                   :desc "Browse emacs.d"              "E"   #'doom/browse-in-emacsd
-                   :desc "Find file"                   "f"   #'find-file
-                   :desc "Find file from here"         "F"   #'+default/find-file-under-here
-                   :desc "Locate file"                 "l"   #'locate
-                   :desc "Rename/move this file"       "m"   #'doom/move-this-file
-                   :desc "Find file in private config" "p"   #'doom/open-private-config
-                   :desc "Browse private config"       "P"   #'doom/open-private-config
-                   :desc "Recent files"                "r"   #'recentf-open-files
-                   :desc "Recent project files"        "R"   #'projectile-recentf
-                   :desc "Sudo this file"              "u"   #'doom/sudo-this-file
-                   :desc "Sudo find file"              "U"   #'doom/sudo-find-file
-                   :desc "Yank filename"               "y"   #'+default/yank-buffer-filename
-                   :desc "Open scratch buffer"         "x"   #'doom/open-scratch-buffer
-                   :desc "Switch to scratch buffer"    "X"   #'doom/switch-to-scratch-buffer)
+       (:when (modulep! :tools editorconfig)
+         :desc "Open project editorconfig"  "c"   #'editorconfig-find-current-editorconfig)
+       :desc "Copy this file"              "C"   #'doom/copy-this-file
+       :desc "Find directory"              "d"   #'dired
+       :desc "Delete this file"            "D"   #'doom/delete-this-file
+       :desc "Find file in emacs.d"        "e"   #'doom/find-file-in-emacsd
+       :desc "Browse emacs.d"              "E"   #'doom/browse-in-emacsd
+       :desc "Find file"                   "f"   #'find-file
+       :desc "Find file from here"         "F"   #'+default/find-file-under-here
+       :desc "Locate file"                 "l"   #'locate
+       :desc "Rename/move this file"       "m"   #'doom/move-this-file
+       :desc "Find file in private config" "p"   #'doom/open-private-config
+       :desc "Browse private config"       "P"   #'doom/open-private-config
+       :desc "Recent files"                "r"   #'recentf-open-files
+       :desc "Recent project files"        "R"   #'projectile-recentf
+       :desc "Sudo this file"              "u"   #'doom/sudo-this-file
+       :desc "Sudo find file"              "U"   #'doom/sudo-find-file
+       :desc "Yank filename"               "y"   #'+default/yank-buffer-filename
+       :desc "Open scratch buffer"         "x"   #'doom/open-scratch-buffer
+       :desc "Switch to scratch buffer"    "X"   #'doom/switch-to-scratch-buffer)
 
 ;;; <leader> r --- remote
       (:when (modulep! :tools upload)
