@@ -62,11 +62,14 @@
 ;; You can also try 'gd' (or 'C-c c d') to jump to their definition and see how
 ;; they are implemented.
 
-(require 'transient)
+(use-package transient
+  :ensure t)
 
 (use-package aider
+  :ensure t
+  :after transient
   :config
-  (setq aider-args '("--model" "sonnet"))
+  (setq aider-args '("-4"))
   (require 'aider-doom))
 
 (require 'cl)

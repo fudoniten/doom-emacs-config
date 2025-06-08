@@ -23,6 +23,8 @@
 (package! restclient)
 (package! gptel :recipe (:nonrecursive t))
 
+(package! transien)
+
 (package! aider :recipe (:host github :repo "tninja/aider.el"))
 
 ;; (package! pylint)
