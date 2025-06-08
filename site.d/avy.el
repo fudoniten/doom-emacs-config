@@ -7,7 +7,7 @@
 ;; Created: June 08, 2025
 ;; Modified: June 08, 2025
 ;; Version: 0.0.1
-;; Keywords: keybindings, configuration, emacs, shortcuts, leader keys, doom emacs
+;; Keywords: avy, emacs, hydra, navigation, text manipulation, keybindings
 ;; Homepage: https://github.com/niten/avy
 ;; Package-Requires: ((emacs "24.3"))
 ;;
