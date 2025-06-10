@@ -26,6 +26,7 @@
 (package! kubernetes)
 (package! gptel :recipe (:nonrecursive t))
 (package! aider :recipe (:host github :repo "tninja/aider.el"))
+(package! aidermacs)
 (package! graphviz-dot-mode)
 
 ;; Transient

@@ -53,6 +53,10 @@
   (setq aider-args '("-4"))
   (require 'aider-doom))
 
+(use-package aidermacs
+  :ensure t
+  :after transient)
+
 ;; Environment
 (require 'cl)
 (load! "site-functions.el")
