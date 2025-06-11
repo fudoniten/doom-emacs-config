@@ -51,7 +51,8 @@
   :after transient
   :config
   (setq aider-args '("-4"))
-  (require 'aider-doom))
+  ;; (require 'aider-doom)
+  )
 
 (use-package aidermacs
   :ensure t
