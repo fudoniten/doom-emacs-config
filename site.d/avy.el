@@ -9,7 +9,7 @@
 ;; Version: 0.0.1
 ;; Keywords: avy, emacs, hydra, navigation, text manipulation, keybindings
 ;; Homepage: https://github.com/niten/avy
-;; Package-Requires: ((emacs "24.3"))
+;; Package-Requires: ((emacs "25.1"))
 ;;
 ;; This file is not part of GNU Emacs.
 ;;
@@ -18,8 +18,6 @@
 ;;  Description
 ;;
 ;;; Code:
-
-
 
 (provide 'avy-menus)
 ;;; avy.el ends here

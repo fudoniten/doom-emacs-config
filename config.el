@@ -43,15 +43,18 @@
 ;; they are implemented.
 
 ;; Packages
-(use-package transient
-  :ensure t)
 
-(use-package aider
-  :ensure t
-  :after transient
-  :config
-  (setq aider-args '("-4"))
-  (require 'aider-doom))
+
+;; (use-package transient
+;;   :ensure t)
+
+;;;; Broken shit.
+;; (use-package aider
+;;   :ensure t
+;;   :after transient
+;;   :config
+;;   (setq aider-args '("-4"))
+;;   (require 'aider-doom))
 
 (use-package aidermacs
   :ensure t
