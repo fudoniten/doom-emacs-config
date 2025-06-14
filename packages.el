@@ -19,18 +19,18 @@
 ;; Org and Note-taking
 (package! org-roam)
 
+;; Transient
+(package! transient)
+
 ;; Development Tools
 (package! edit-server)
 (package! ivy-prescient)
 (package! noflet)
 (package! kubernetes)
 (package! gptel :recipe (:nonrecursive t))
-(package! aider :recipe (:host github :repo "tninja/aider.el"))
+(package! aider :recipe)
 (package! aidermacs)
 (package! graphviz-dot-mode)
-
-;; Transient
-(package! transient)
 
 ;; Embark
 (package! embark)
