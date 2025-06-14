@@ -28,7 +28,7 @@
 (package! noflet)
 (package! kubernetes)
 (package! gptel :recipe (:nonrecursive t))
-(package! aider :recipe)
+;; (package! aider :recipe)
 (package! aidermacs)
 (package! graphviz-dot-mode)
 
