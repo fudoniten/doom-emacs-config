@@ -157,7 +157,7 @@
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
 
-(load! "site.d/avy.el")
+
 
 (provide 'config)
 
