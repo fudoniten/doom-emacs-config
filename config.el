@@ -60,7 +60,14 @@
   :ensure t
   :after transient)
 
-;; Environment
+;; Load configuration directories
+(load-configuration-directories
+ (list "./site.d/"
+       (expand-file-name "~/.local/emacs.d/")
+       (expand-file-name "~/.config/emacs.d/")
+       (expand-file-name "~/.config/local-emacs.d/")
+       (getenv "XDG_CONFIG_DIR")))
+       
 (require 'cl)
 (load! "site-functions.el")
 (setq-default tab-width 2)
@@ -87,23 +94,22 @@
   (let (org-log-done org-log-states)   ; turn off logging
     (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
 
-(defun load-configuration-directory (config-dir)
-  "Load all configuration files from the given `CONFIG-DIR' if it exists."
-  (when (stringp config-dir)
-    (if (file-directory-p config-dir)
-        (let ((configs (filter (lambda (name)
-                                 (not (or (string-match "~$" name)
-                                          (string-match "^[.]" name))))
-                               (directory-files config-dir))))
-          (dolist (file configs)
-            (let ((full-file (expand-file-name file config-dir)))
-              (if (or (file-regular-p full-file) (file-symlink-p full-file))
-                  (progn (message "Loading file %s" full-file)
-                         (condition-case err
-                             (load full-file)
-                           (error (message "Error loading file %s: %s" full-file err))))
-                (message "Skipping invalid file %s" full-file)))))
-      (message "Skipping nonexistent config directory %s" config-dir))))
+(defun load-configuration-directories (dirs)
+  "Load all configuration files from the given list of `DIRS'."
+  (dolist (dir dirs)
+    (when (and (stringp dir) (file-directory-p dir))
+      (let ((configs (filter (lambda (name)
+                               (not (or (string-match "~$" name)
+                                        (string-match "^[.]" name))))
+                             (directory-files dir))))
+        (dolist (file configs)
+          (let ((full-file (expand-file-name file dir)))
+            (if (or (file-regular-p full-file) (file-symlink-p full-file))
+                (progn (message "Loading file %s" full-file)
+                       (condition-case err
+                           (load full-file)
+                         (error (message "Error loading file %s: %s" full-file err))))
+              (message "Skipping invalid file %s" full-file))))))))
 
 ;; Hooks
 (add-hook 'after-init-hook 'load-persistent-scratch)
