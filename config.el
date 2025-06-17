@@ -174,17 +174,14 @@
   (or (getenv var) ""))
 
 (defun load-all-configurations ()
-  "Load configuration directories."
-  (let* ((system-bases     (filter-existing-dirs
-                            (append
-                             (list (getenv-or-not "XDG_STATE_HOME")
-                                   (getenv-or-not "XDG_DATA_HOME")
-                                   (getenv-or-not "XDG_RUNTIME_DIR")
-                                   (getenv-or-not "XDG_CONFIG_HOME"))
-                             (split-string (getenv-or-not "XDG_CONFIG_DIRS")))))
-         (system-subs      (list "emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
+  "Load configuration directories from various system and user-defined paths."
+  (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR" "XDG_CONFIG_HOME"))
+         (system-bases (filter-existing-dirs
+                        (append (mapcar #'getenv-or-not xdg-vars)
+                                (split-string (getenv-or-not "XDG_CONFIG_DIRS")))))
+         (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
-         (conf-dirs        (append system-conf-dirs (list "./site.d/"))))
+         (conf-dirs (append system-conf-dirs '("./site.d/"))))
     (load-configuration-directories conf-dirs)))
 
 (load-all-configurations)
