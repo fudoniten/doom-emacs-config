@@ -60,14 +60,6 @@
   :ensure t
   :after transient)
 
-;; Load configuration directories
-(load-configuration-directories
- (list "./site.d/"
-       (expand-file-name "~/.local/emacs.d/")
-       (expand-file-name "~/.config/emacs.d/")
-       (expand-file-name "~/.config/local-emacs.d/")
-       (getenv "XDG_CONFIG_DIR")))
-       
 (require 'cl)
 (load! "site-functions.el")
 (setq-default tab-width 2)
@@ -163,7 +155,39 @@
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
 
+(defun filter-existing-dirs (dirs)
+  "Remove any nonexistent directories from a list."
+  (cl-remove-if-not #'file-directory-p dirs))
 
+(defun cross-product-dirs (bases subs)
+  "Build dirs from all combinations of [bases] x [subs], then filter for existing."
+  (filter-existing-dirs
+   (flatmap
+    (lambda (base)
+      (flatmap
+       (lambda (sub)
+         (expand-file-name sub base))
+       subs))
+    bases)))
+
+(defun getenv-or-not (var)
+  (or (getenv var) ""))
+
+(defun load-all-configurations ()
+  "Load configuration directories."
+  (let* ((system-bases     (filter-existing-dirs
+                            (append
+                             (list (getenv-or-not "XDG_STATE_HOME")
+                                   (getenv-or-not "XDG_DATA_HOME")
+                                   (getenv-or-not "XDG_RUNTIME_DIR")
+                                   (getenv-or-not "XDG_CONFIG_HOME"))
+                             (split-string (getenv-or-not "XDG_CONFIG_DIRS")))))
+         (system-subs      (list "emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
+         (system-conf-dirs (cross-product-dirs system-bases system-subs))
+         (conf-dirs        (append system-conf-dirs (list "./site.d/"))))
+    (load-configuration-directories conf-dirs)))
+
+(load-all-configurations)
 
 (provide 'config)
 
