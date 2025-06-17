@@ -281,6 +281,9 @@
    (cdr (ring-ref avy-ring 0)))
   t)
 
+(defun flatmap (fn lst)
+  (apply #'append (mapcar fn lst)))
+
 (provide 'site-functions)
 
 ;; site-functions.el ends here

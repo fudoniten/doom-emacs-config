@@ -72,26 +72,26 @@
 
 ;;; <leader> f --- file
       (:prefix-map ("f" . "file")
-       (:when (modulep! :tools editorconfig)
-         :desc "Open project editorconfig"  "c"   #'editorconfig-find-current-editorconfig)
-       :desc "Copy this file"              "C"   #'doom/copy-this-file
-       :desc "Find directory"              "d"   #'dired
-       :desc "Delete this file"            "D"   #'doom/delete-this-file
-       :desc "Find file in emacs.d"        "e"   #'doom/find-file-in-emacsd
-       :desc "Browse emacs.d"              "E"   #'doom/browse-in-emacsd
-       :desc "Find file"                   "f"   #'find-file
-       :desc "Find file from here"         "F"   #'+default/find-file-under-here
-       :desc "Locate file"                 "l"   #'locate
-       :desc "Rename/move this file"       "m"   #'doom/move-this-file
-       :desc "Find file in private config" "p"   #'doom/open-private-config
-       :desc "Browse private config"       "P"   #'doom/open-private-config
-       :desc "Recent files"                "r"   #'recentf-open-files
-       :desc "Recent project files"        "R"   #'projectile-recentf
-       :desc "Sudo this file"              "u"   #'doom/sudo-this-file
-       :desc "Sudo find file"              "U"   #'doom/sudo-find-file
-       :desc "Yank filename"               "y"   #'+default/yank-buffer-filename
-       :desc "Open scratch buffer"         "x"   #'doom/open-scratch-buffer
-       :desc "Switch to scratch buffer"    "X"   #'doom/switch-to-scratch-buffer)
+                   (:when (modulep! :tools editorconfig)
+                     :desc "Open project editorconfig"  "c"   #'editorconfig-find-current-editorconfig)
+                   :desc "Copy this file"              "C"   #'doom/copy-this-file
+                   :desc "Find directory"              "d"   #'dired
+                   :desc "Delete this file"            "D"   #'doom/delete-this-file
+                   :desc "Find file in emacs.d"        "e"   #'doom/find-file-in-emacsd
+                   :desc "Browse emacs.d"              "E"   #'doom/browse-in-emacsd
+                   :desc "Find file"                   "f"   #'find-file
+                   :desc "Find file from here"         "F"   #'+default/find-file-under-here
+                   :desc "Locate file"                 "l"   #'locate
+                   :desc "Rename/move this file"       "m"   #'doom/move-this-file
+                   :desc "Find file in private config" "p"   #'doom/open-private-config
+                   :desc "Browse private config"       "P"   #'doom/open-private-config
+                   :desc "Recent files"                "r"   #'recentf-open-files
+                   :desc "Recent project files"        "R"   #'projectile-recentf
+                   :desc "Sudo this file"              "u"   #'doom/sudo-this-file
+                   :desc "Sudo find file"              "U"   #'doom/sudo-find-file
+                   :desc "Yank filename"               "y"   #'+default/yank-buffer-filename
+                   :desc "Open scratch buffer"         "x"   #'doom/open-scratch-buffer
+                   :desc "Switch to scratch buffer"    "X"   #'doom/switch-to-scratch-buffer)
 
 ;;; <leader> r --- remote
       (:when (modulep! :tools upload)
@@ -458,11 +458,11 @@
 
       ;;; buffer management
       (:when (modulep! :completion ivy)
-       "C-x b"      #'ivy-switch-buffer
-       "C-x 4 b"    #'ivy-switch-buffer-other-window)
+        "C-x b"      #'ivy-switch-buffer
+        "C-x 4 b"    #'ivy-switch-buffer-other-window)
       (:when (not (modulep! :completion ivy))
-       "C-x b"       #'switch-to-buffer
-       "C-x 4 b"     #'switch-to-buffer-other-window)
+        "C-x b"       #'switch-to-buffer
+        "C-x 4 b"     #'switch-to-buffer-other-window)
 
       (:when (modulep! :ui workspaces)
         "C-x B"       #'persp-switch-to-buffer
@@ -476,27 +476,27 @@
       ;;; company-mode
       "C-:" #'+company/complete
       (:after company
-        :map company-active-map
-        "C-o"        #'company-search-kill-others
-        "C-n"        #'company-select-next
-        "C-p"        #'company-select-previous
-        "C-h"        #'company-quickhelp-manual-begin
-        "C-S-h"      #'company-show-doc-buffer
-        "C-s"        #'company-search-candidates
-        "M-s"        #'company-filter-candidates
-        [C-tab]      #'company-complete-common-or-cycle
-        [tab]        #'company-complete-common-or-cycle
-        [backtab]    #'company-select-previous
-        "C-RET"      #'counsel-company
-        :map company-search-map
-        "C-n"        #'company-search-repeat-forward
-        "C-p"        #'company-search-repeat-backward
-        "C-s"        (cmd! (company-search-abort) (company-filter-candidates)))
+       :map company-active-map
+       "C-o"        #'company-search-kill-others
+       "C-n"        #'company-select-next
+       "C-p"        #'company-select-previous
+       "C-h"        #'company-quickhelp-manual-begin
+       "C-S-h"      #'company-show-doc-buffer
+       "C-s"        #'company-search-candidates
+       "M-s"        #'company-filter-candidates
+       [C-tab]      #'company-complete-common-or-cycle
+       [tab]        #'company-complete-common-or-cycle
+       [backtab]    #'company-select-previous
+       "C-RET"      #'counsel-company
+       :map company-search-map
+       "C-n"        #'company-search-repeat-forward
+       "C-p"        #'company-search-repeat-backward
+       "C-s"        (cmd! (company-search-abort) (company-filter-candidates)))
 
       ;;; ein notebooks
       (:after ein:notebook-multilang
-        :map ein:notebook-multilang-mode-map
-        "C-c h" #'+ein/hydra/body)
+       :map ein:notebook-multilang-mode-map
+       "C-c h" #'+ein/hydra/body)
 
       ;;; expand-region
       "C-="  #'er/expand-region
@@ -504,41 +504,41 @@
 
       ;;; flycheck
       (:after flycheck
-        :map flycheck-error-list-mode-map
-        "C-n" #'flycheck-error-list-next-error
-        "C-p" #'flycheck-error-list-previous-error
-        "RET" #'flycheck-error-list-goto-error)
+       :map flycheck-error-list-mode-map
+       "C-n" #'flycheck-error-list-next-error
+       "C-p" #'flycheck-error-list-previous-error
+       "RET" #'flycheck-error-list-goto-error)
 
       ;;; help and info
       (:after help-mode
-        :map help-mode-map
-        "o" #'link-hint-open-link
-        ">" #'help-go-forward
-        "<" #'help-go-back
-        "n" #'forward-button
-        "p" #'backward-button)
+       :map help-mode-map
+       "o" #'link-hint-open-link
+       ">" #'help-go-forward
+       "<" #'help-go-back
+       "n" #'forward-button
+       "p" #'backward-button)
       (:after helpful
-        :map helpful-mode-map
-        "o" #'link-hint-open-link)
+       :map helpful-mode-map
+       "o" #'link-hint-open-link)
       (:after apropos
-        :map apropos-mode-map
-        "o" #'link-hint-open-link
-        "n" #'forward-button
-        "p" #'backward-button)
+       :map apropos-mode-map
+       "o" #'link-hint-open-link
+       "n" #'forward-button
+       "p" #'backward-button)
       (:after info
-        :map Info-mode-map
-        "o" #'link-hint-open-link)
+       :map Info-mode-map
+       "o" #'link-hint-open-link)
 
       ;;; ivy & counsel
       (:when (modulep! :completion ivy)
         (:after ivy
-          :map ivy-minibuffer-map
-          "TAB"   #'ivy-alt-done
-          "C-g"   #'keyboard-escape-quit)
+         :map ivy-minibuffer-map
+         "TAB"   #'ivy-alt-done
+         "C-g"   #'keyboard-escape-quit)
         (:after counsel
-          :map counsel-ag-map
-          "C-SPC" #'ivy-call-and-recenter ; preview
-          "M-RET" #'+ivy/git-grep-other-window-action)
+         :map counsel-ag-map
+         "C-SPC" #'ivy-call-and-recenter ; preview
+         "M-RET" #'+ivy/git-grep-other-window-action)
         "C-M-y"   #'counsel-yank-pop)
 
       ;;; neotree
@@ -546,23 +546,23 @@
         "<f9>"    #'+neotree/open
         "<C-f9>"  #'+neotree/find-this-file
         (:after neotree
-          :map neotree-mode-map
-          "q"     #'neotree-hide
-          "RET"   #'neotree-enter
-          "SPC"   #'neotree-quick-look
-          "v"     #'neotree-enter-vertical-split
-          "s"     #'neotree-enter-horizontal-split
-          "c"     #'neotree-create-node
-          "D"     #'neotree-delete-node
-          "g"     #'neotree-refresh
-          "r"     #'neotree-rename-node
-          "R"     #'neotree-refresh
-          "h"     #'+neotree/collapse-or-up
-          "l"     #'+neotree/expand-or-open
-          "n"     #'neotree-next-line
-          "p"     #'neotree-previous-line
-          "N"     #'neotree-select-next-sibling-node
-          "P"     #'neotree-select-previous-sibling-node))
+         :map neotree-mode-map
+         "q"     #'neotree-hide
+         "RET"   #'neotree-enter
+         "SPC"   #'neotree-quick-look
+         "v"     #'neotree-enter-vertical-split
+         "s"     #'neotree-enter-horizontal-split
+         "c"     #'neotree-create-node
+         "D"     #'neotree-delete-node
+         "g"     #'neotree-refresh
+         "r"     #'neotree-rename-node
+         "R"     #'neotree-refresh
+         "h"     #'+neotree/collapse-or-up
+         "l"     #'+neotree/expand-or-open
+         "n"     #'neotree-next-line
+         "p"     #'neotree-previous-line
+         "N"     #'neotree-select-next-sibling-node
+         "P"     #'neotree-select-previous-sibling-node))
 
       ;;; popups
       (:when (modulep! :ui popup)
@@ -572,16 +572,16 @@
 
       ;;; smartparens
       (:after smartparens
-        :map smartparens-mode-map
-        "C-M-a"         #'sp-beginning-of-sexp
-        "C-M-e"         #'sp-end-of-sexp
-        "C-M-f"         #'sp-forward-sexp
-        "C-M-b"         #'sp-backward-sexp
-        "C-M-d"         #'sp-splice-sexp
-        "C-M-k"         #'sp-kill-sexp
-        "C-M-t"         #'sp-transpose-sexp
-        [C-M-backspace] #'sp-backward-kill-sexp
-        )
+       :map smartparens-mode-map
+       "C-M-a"         #'sp-beginning-of-sexp
+       "C-M-e"         #'sp-end-of-sexp
+       "C-M-f"         #'sp-forward-sexp
+       "C-M-b"         #'sp-backward-sexp
+       "C-M-d"         #'sp-splice-sexp
+       "C-M-k"         #'sp-kill-sexp
+       "C-M-t"         #'sp-transpose-sexp
+       [C-M-backspace] #'sp-backward-kill-sexp
+       )
 
       ;;; treemacs
       (:when (modulep! :ui treemacs)
@@ -590,13 +590,13 @@
 
 (map! :leader
       (:when (modulep! :editor fold)
-       (:prefix ("C-F" . "fold")
-        "C-d"     #'vimish-fold-delete
-        "C-a C-d" #'vimish-fold-delete-all
-        "C-f"     #'+fold/toggle
-        "C-a C-f" #'+fold/close-all
-        "C-u"     #'+fold/open
-        "C-a C-u" #'+fold/open-all)))
+        (:prefix ("C-F" . "fold")
+                 "C-d"     #'vimish-fold-delete
+                 "C-a C-d" #'vimish-fold-delete-all
+                 "C-f"     #'+fold/toggle
+                 "C-a C-f" #'+fold/close-all
+                 "C-u"     #'+fold/open
+                 "C-a C-u" #'+fold/open-all)))
 
 (map! "M-g"     #'goto-line
       "C-s"     #'swiper

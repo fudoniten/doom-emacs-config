@@ -89,19 +89,20 @@
 (defun load-configuration-directories (dirs)
   "Load all configuration files from the given list of `DIRS'."
   (dolist (dir dirs)
-    (when (and (stringp dir) (file-directory-p dir))
-      (let ((configs (filter (lambda (name)
-                               (not (or (string-match "~$" name)
-                                        (string-match "^[.]" name))))
-                             (directory-files dir))))
-        (dolist (file configs)
-          (let ((full-file (expand-file-name file dir)))
-            (if (or (file-regular-p full-file) (file-symlink-p full-file))
-                (progn (message "Loading file %s" full-file)
-                       (condition-case err
-                           (load full-file)
-                         (error (message "Error loading file %s: %s" full-file err))))
-              (message "Skipping invalid file %s" full-file))))))))
+    (if (and (stringp dir) (file-directory-p dir))
+        (let ((configs (filter (lambda (name)
+                                 (not (or (string-match "~$" name)
+                                          (string-match "^[.]" name))))
+                               (directory-files dir))))
+          (dolist (file configs)
+            (let ((full-file (expand-file-name file dir)))
+              (if (or (file-regular-p full-file) (file-symlink-p full-file))
+                  (progn (message "Loading file %s" full-file)
+                         (condition-case err
+                             (load full-file)
+                           (error (message "Error loading file %s: %s" full-file err))))
+                (message "Skipping invalid file %s" full-file)))))
+      (message "skipping invalid or nonexistent directory: %s" dir))))
 
 ;; Hooks
 (add-hook 'after-init-hook 'load-persistent-scratch)
@@ -164,24 +165,25 @@
   (filter-existing-dirs
    (flatmap
     (lambda (base)
-      (flatmap
+      (mapcar
        (lambda (sub)
          (expand-file-name sub base))
        subs))
     bases)))
 
-(defun getenv-or-not (var)
+(defun getenv-or-empty (var)
   (or (getenv var) ""))
 
 (defun load-all-configurations ()
   "Load configuration directories from various system and user-defined paths."
   (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR" "XDG_CONFIG_HOME"))
          (system-bases (filter-existing-dirs
-                        (append (mapcar #'getenv-or-not xdg-vars)
-                                (split-string (getenv-or-not "XDG_CONFIG_DIRS")))))
+                        (append (mapcar #'getenv-or-empty xdg-vars)
+                                (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
          (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
          (conf-dirs (append system-conf-dirs '("./site.d/"))))
+    (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
     (load-configuration-directories conf-dirs)))
 
 (load-all-configurations)
