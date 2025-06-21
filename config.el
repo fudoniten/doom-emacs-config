@@ -183,7 +183,8 @@
                                 (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
          (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
-         (conf-dirs (append system-conf-dirs '("./site.d/"))))
+         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-filename))))
+         (conf-dirs (append system-conf-dirs (list site-config))))
     (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
     (load-configuration-directories conf-dirs)))
 
