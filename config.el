@@ -12,7 +12,7 @@
 (setq native-comp-deferred-compilation-deny-list nil)
 
 ;; Appearance
-(require 'doom-two-tone-themes)
+;; (require 'doom-two-tone-themes)
 (setq doom-theme 'doom-tokyo-night)
 (setq display-line-numbers-type t)
 
