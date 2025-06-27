@@ -22,8 +22,6 @@
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
                      'doom-navy-copper)))
-  (unless (member theme-name (custom-available-themes))
-    (error "theme '%s' is not available. check DOOM_THEME or theme path." theme-name))
   (message "using doom theme: %s" doom-theme)
   (setq doom-theme theme-name))
 
