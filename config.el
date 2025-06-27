@@ -12,10 +12,20 @@
 (setq native-comp-deferred-compilation-deny-list nil)
 
 ;; Appearance
-(require 'doom-two-tone-themes)
-(use-package doom-two-tone-themes)
-;; (setq doom-theme 'doom-tokyo-night)
-(setq doom-theme 'doom-navy-copper)
+(use-package doom-two-tone-themes
+  :ensure t
+  :init (add-to-list 'custom-theme-load-path
+                     (expand-file-name "themes"
+                                       (file-name-directory (locate-library "doom-two-tone-themes.el")))))
+
+(let* ((env-theme (getenv "DOOM_THEME"))
+       (theme-name (if (and env-theme (not (string-empty-p env-theme)))
+                       (intern env-theme)
+                     'doom-navy-copper)))
+  (unless (member theme-name (custom-available-themes))
+    (error "theme '%s' is not available. check DOOM_THEME or theme path." theme-name))
+  (message "using doom theme: %s" doom-theme)
+  (setq doom-theme theme-name))
 
 (setq display-line-numbers-type t)
 
