@@ -18,7 +18,7 @@
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
-                     'doom-navy-copper)))
+                     'doom-snazzy)))
   (message "using doom theme: %s" doom-theme)
   (setq doom-theme theme-name))
 
