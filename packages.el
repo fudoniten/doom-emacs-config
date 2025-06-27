@@ -11,58 +11,45 @@
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
 
+(defmacro maybe-package! (pkg &rest args)
+  "Call `package!' for PKG only if it's not already in the load path."
+  `(unless (locate-library ,(symbol-name pkg))
+     (package! ,pkg ,@args)))
+
+;; Basic Emacs functionality
+(maybe-package! ivy-prescient)
+(maybe-package! marginalia)
+
 ;; Communication Packages
-(package! elpher)
-(package! chatgpt-shell)
-(package! restclient)
+(maybe-package! elpher)
+(maybe-package! chatgpt-shell)
+(maybe-package! restclient)
 
 ;; Org and Note-taking
-(package! org-roam)
+(maybe-package! org-roam)
 
 ;; Transient
-(package! transient)
+(maybe-package! transient)
 
 ;; Development Tools
-(package! edit-server)
-(package! ivy-prescient)
-(package! noflet)
-(package! kubernetes)
-(package! gptel :recipe (:nonrecursive t))
-;; (package! aider :recipe)
-(package! aidermacs)
-(package! graphviz-dot-mode)
+(maybe-package! edit-server)
+(maybe-package! eglot)
+(maybe-package! nix-mode)
+(maybe-package! noflet)
+(maybe-package! kubernetes)
+(maybe-package! gptel :recipe (:nonrecursive t))
+(maybe-package! aidermacs)
+(maybe-package! graphviz-dot-mode)
 
 ;; Embark
-(package! embark)
+(maybe-package! embark)
 
-(package! doom-two-tone-themes
-  :recipe (:host github
-           :repo "eliraz-refael/doom-two-tone-themes"
-           :files ("doom-two-tone-themes.el" "themes/*.el")))
+(maybe-package! doom-two-tone-themes
+                :recipe (:host github
+                         :repo "eliraz-refael/doom-two-tone-themes"
+                         :files ("doom-two-tone-themes.el" "themes/*.el")))
 
-;; Eglot and Nix
-(when (and (package! eglot) (package! nix-mode))
-  (after! eglot
-    (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
-    (add-hook 'nix-mode-hook 'eglot-ensure)))
-
-;; Marginalia
-(after! marginalia
-  (marginalia-mode))
-
-;; TLS Advice
-(defun tls-nocheck-error-advice (orig-fun &rest args)
-  "Advise a function (with :around) not to check TLS errors.
-
-ORIG-FUN - Function name to be advised
-ARGS - Arguments to function
-
-Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice."
-  (let ((gnutls-verify-error nil))
-    (apply orig-fun args)))
-
-(after! elpher
-  (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
+(maybe-package! bash-completion)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

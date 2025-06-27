@@ -12,8 +12,7 @@
   (let ((text (thing-at-point 'line)))
     (save-excursion
       (end-of-line)
-      (insert "\n" text))
-    (message "Duplicated line")))
+      (insert "\n" text))))
 
 (defun toggle-comment-on-line ()
   "Toggle comment on the current line or region."
@@ -30,8 +29,7 @@
   "Open a new line below the current one and move the cursor there."
   (interactive)
   (end-of-line)
-  (newline-and-indent)
-  (message "Opened line below"))
+  (newline-and-indent))
 
 (defun open-line-above ()
   "Open a new line above the current one and move the cursor there."
@@ -39,8 +37,7 @@
   (beginning-of-line)
   (newline)
   (forward-line -1)
-  (indent-according-to-mode)
-  (message "Opened line above"))
+  (indent-according-to-mode))
 
 (provide 'site-functions)
 
@@ -54,32 +51,26 @@
     (save-restriction
       (save-match-data
         (when (re-search-forward "[ \t\r\n]+" nil t)
-          (replace-match "" nil nil)
-          (message "Whitespace removed"))))))
+          (replace-match "" nil nil))))))
 
 (defun join-dirs (&rest strings)
   "Connect a list of STRINGS with a path separator, /."
-  (message "Joining directories: %s" strings)
   (mapconcat 'identity strings "/"))
 
 (defun path-join (paths)
   "Join PATHS with a colon separator."
-  (message "Joining paths: %s" paths)
   (mapconcat 'identity paths ":"))
 
 (defun strip-dup-paths (path)
   "Remove duplicate paths from PATH."
-  (message "Stripping duplicate paths from: %s" path)
   (path-join (delete-dups (split-string path ":"))))
 
 (defun strip-invalid-paths (path)
   "Remove invalid paths from PATH."
-  (message "Stripping invalid paths from: %s" path)
   (path-join (filter (lambda (p) (string-match "^/" p)) (split-string path ":"))))
 
 (defun filter (condp lst)
   "Remove all elements not matching CONDP from LST."
-  (message "Filtering list with condition: %s" condp)
   (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
 
 ;; Buffer and File Management

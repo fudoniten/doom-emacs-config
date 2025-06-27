@@ -12,8 +12,10 @@
 (setq native-comp-deferred-compilation-deny-list nil)
 
 ;; Appearance
-(require 'doom-two-tone-themes)
-(setq doom-theme 'doom-tokyo-night)
+(require doom-two-tone-themes)
+;; (setq doom-theme 'doom-tokyo-night)
+(setq doom-theme 'doom-navy-copper)
+
 (setq display-line-numbers-type t)
 
 ;; Org Mode Directories
@@ -57,9 +59,38 @@
 ;;   (setq aider-args '("-4"))
 ;;   (require 'aider-doom))
 
+(use-package ivy-prescient)
+(use-package marginalia)
+
+(use-package elpher)
+(use-package chatgpt-shell)
+(use-package restclient)
+
+(use-package org-roam)
+
+(use-package transient)
+
 (use-package aidermacs
   :ensure t
   :after transient)
+(use-package edit-server)
+(use-package eglot)
+(use-package nix-mode)
+(use-package kubernetes)
+(use-package gptel)
+(use-package graphviz-dot-mode)
+
+(use-package embark)
+
+(use-package doom-two-tone-themes)
+
+(use-package bash-completion
+  :commands bash-completion-dynamic-complete
+  :hook ((shell-dynamic-complete-functions . bash-completion-dynamic-complete)
+         (eshell-mode . my/eshell-mode-completion-hook))
+  :config (defun my/eshell-mode-completion-hook ()
+            (add-hook 'completion-at-point-functions
+                      'bash-completion-campf-nonexclusive nil t)))
 
 (require 'cl)
 (load! "site-functions.el")
@@ -71,7 +102,99 @@
 (setq diff-switches "-u")
 (setq tab-always-indent t)
 
+;; Eglot and Nix
+(when (and (locate-library "eglot") (locate-library "nix-mode"))
+  (after! eglot
+    (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
+    (add-hook 'nix-mode-hook 'eglot-ensure)))
+
+;; Marginalia
+(after! marginalia
+  (marginalia-mode))
+
+;; TLS Advice
+(defun tls-nocheck-error-advice (orig-fun &rest args)
+  "Advise a function (with :around) not to check TLS errors.
+
+ORIG-FUN - Function name to be advised
+ARGS - Arguments to function
+
+Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice."
+  (let ((gnutls-verify-error nil))
+    (apply orig-fun args)))
+
+(after! elpher
+  (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
+
+;;;;
+;; TRAMP
+;;;;
+;;
+;; per: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
+
+(setq remote-file-name-inhibit-locks t
+      tramp-use-scp-direct-remote-copying t
+      remote-file-name-inhibit-auto-save-visited t
+      tramp-copy-size-limit (* 1024 1024 2)
+      tramp-verbose 2)
+
+(connection-local-set-profile-variables
+ 'remote-direct-async-process
+ '((tramp-direct-async-process . t)))
+
+(connection-local-set-profiles
+ '(:application tramp :machine "server")
+ 'remote-direct-async-process)
+
+(setq magit-tramp-pipe-stty-settings 'pty)
+
+(with-eval-after-load 'tramp
+  (with-eval-after-load 'compile
+    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
+
+(defun $magit-auto-revert-not-remote (orig-fun &rest args)
+  (unless (and buffer-file-name (file-remote-p buffer-filename))
+    (apply orig-fun args)))
+
+(advice-add 'magit-turn-on-auto-revert-mode-if-desired
+            :around
+            #'$magit-auto-revert-not-remote)
+
+(setq magit-branch-direct-configure nil
+      magit-refresh-status-buffer nil)
+
+(defun memoize-remote (key cache orig-fn &rest args)
+  "Memoize a value if the key is a remote path."
+  (if (and key
+           (file-remote-p key))
+      (if-let ((current (assoc key (symbol-value cache))))
+          (cdr current)
+        (let ((current (apply orig-fn args)))
+          (set cache (cons (cons key current) (symbol-value cache)))
+          current))
+    (apply orig-fn args)))
+
+;; Memoize magit top level
+(defvar magit-toplevel-cache nil)
+(defun memoize-magit-toplevel (orig &optional directory)
+  (memoize-remote (or directory default-directory)
+                  'magit-toplevel-cache orig directory))
+(advice-add 'magit-toplevel :around #'memoize-magit-toplevel)
+
+;; memoize vc-git-root
+(defvar vc-git-root-cache nil)
+(defun memoize-vc-git-root (orig file)
+  (let ((value (memoize-remote (file-name-directory file) 'vc-git-root-cache orig file)))
+    ;; sometimes vc-git-root returns nil even when there is a root there
+    (when (null (cdr (car vc-git-root-cache)))
+      (setq vc-git-root-cache (cdr vc-git-root-cache)))
+    value))
+(advice-add 'vc-git-root :around #'memoize-vc-git-root)
+
+
+;;;;
 ;; Functions
+;;;;
 (defun filter (condp lst)
   "Filter list LST to only those elements matching CONDP."
   (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
