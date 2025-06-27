@@ -13,10 +13,7 @@
 
 ;; Appearance
 (use-package doom-two-tone-themes
-  :ensure t
-  :init (add-to-list 'custom-theme-load-path
-                     (expand-file-name "themes"
-                                       (file-name-directory (locate-library "doom-two-tone-themes.el")))))
+  :demand t)
 
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
