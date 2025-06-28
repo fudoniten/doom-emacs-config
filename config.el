@@ -96,7 +96,7 @@
          (eshell-mode . my/eshell-mode-completion-hook))
   :config (defun my/eshell-mode-completion-hook ()
             (add-hook 'completion-at-point-functions
-                      'bash-completion-campf-nonexclusive nil t)))
+                      'bash-completion-capf-nonexclusive nil t)))
 
 (require 'cl)
 (load! "site-functions.el")
