@@ -275,6 +275,14 @@
 (defun flatmap (fn lst)
   (apply #'append (mapcar fn lst)))
 
+(defun mark-whole-sexp ()
+  "Mark the entire sexp surrounding point."
+  (interactive)
+  (let ((start (progn (up-list 0) (backward-sexp) (point))))
+    (goto-char start)
+    (set-mark (point))
+    (forward-sexp)))
+
 (provide 'site-functions)
 
 ;; site-functions.el ends here
