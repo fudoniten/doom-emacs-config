@@ -28,6 +28,9 @@
       :desc "Jump to line"                ","   #'avy-goto-line
       :desc "Open eshell here"            "!"   #'eshell-here
 
+      :desc "Expand region"               "C-+" #'er/expand-region
+      :desc "Contract region"             "C--" #'er/contract-region
+
 ;;; <leader> V --- views
       (:prefix-map ("V" . "views")
        :desc "Add view"               "v"   #'ivy-push-view
@@ -499,7 +502,7 @@
        "C-c h" #'+ein/hydra/body)
 
       ;;; expand-region
-      "C-="  #'er/expand-region
+      "C-+"  #'er/expand-region
       "C--"  #'er/contract-region
 
       ;;; flycheck
