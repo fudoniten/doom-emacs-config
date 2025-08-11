@@ -21,6 +21,7 @@
 (maybe-package! marginalia)
 
 ;; Communication Packages
+(maybe-package! ellama)
 (maybe-package! elpher)
 (maybe-package! chatgpt-shell)
 (maybe-package! restclient)

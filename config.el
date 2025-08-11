@@ -84,6 +84,7 @@
 (use-package nix-mode)
 (use-package kubernetes)
 (use-package gptel)
+(use-package ellama)
 ;;;; Broken?
 ;; (use-package graphviz-dot-mode)
 
