@@ -33,14 +33,15 @@
 (maybe-package! transient)
 
 ;; Development Tools
+(maybe-package! aidermacs)
 (maybe-package! edit-server)
 (maybe-package! eglot)
+(maybe-package! gptel :recipe (:nonrecursive t))
+(maybe-package! graphviz-dot-mode)
+(maybe-package! kubernetes)
 (maybe-package! nix-mode)
 (maybe-package! noflet)
-(maybe-package! kubernetes)
-(maybe-package! gptel :recipe (:nonrecursive t))
-(maybe-package! aidermacs)
-(maybe-package! graphviz-dot-mode)
+(maybe-package! paredit)
 
 ;; Embark
 (maybe-package! embark)

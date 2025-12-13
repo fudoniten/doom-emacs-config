@@ -88,6 +88,15 @@
 ;;;; Broken?
 ;; (use-package graphviz-dot-mode)
 
+(use-package paredit
+  :ensure nil
+  :commands (paredit-mode)
+  :hook ((clojure-mode . paredit-mode)
+         (cider-repl-mode . paredit-mode))
+  :config (map! :map paredit-mode-map
+                "M-(" #'paredit-wrap-round
+                "M-)" #'paredit-close-round))
+
 (use-package embark)
 
 (use-package doom-two-tone-themes)
