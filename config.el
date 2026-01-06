@@ -15,8 +15,8 @@
 (use-package doom-two-tone-themes)
 
 (use-package stimmung-themes
-  :init (when-let ((path (locate-library "simmerung-themes-dark-theme")))
-          (add-to-list custom-theme-load-path (file-name-directory path))))
+  :init (when-let ((path (locate-library "stimmung-themes-dark-theme")))
+          (add-to-list 'custom-theme-load-path (file-name-directory path))))
 
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
