@@ -14,15 +14,31 @@
 ;; Appearance
 (use-package doom-two-tone-themes)
 
-(use-package stimmung-themes
-  :init (when-let ((path (locate-library "stimmung-themes-dark-theme")))
-          (add-to-list 'custom-theme-load-path (file-name-directory path))))
+;; (use-package stimmung-themes
+;;     :init (when-let ((path (locate-library "stimmung-themes-dark-theme")))
+;;             (add-to-list 'custom-theme-load-path (file-name-directory path))))
+
+(after! doom-themes
+  (custom-set-faces!
+    ;; “turn off” most categories
+    '(font-lock-keyword-face       :inherit default)
+    '(font-lock-builtin-face       :inherit default)
+    '(font-lock-type-face          :inherit default)
+    '(font-lock-variable-name-face :inherit default)
+    '(font-lock-function-name-face :inherit default)
+
+    ;; keep the “4 classes”
+    ;;'(font-lock-string-face        :inherit default)   ; then add :foreground if you want
+    ;;'(font-lock-comment-face       :inherit default)
+    ;;'(font-lock-constant-face      :inherit default)
+    ;;'(font-lock-doc-face           :inherit font-lock-comment-face)
+    ))
 
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
-                     ;; 'doom-snazzy
-                     'stimmung-themes-dark)))
+                     ;;'stimmung-themes-dark
+                     'doom-snazzy)))
   (message "using doom theme: %s" doom-theme)
   (setq doom-theme theme-name))
 
