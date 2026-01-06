@@ -22,7 +22,7 @@
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
                      ;; 'doom-snazzy
-                     'stimmung-themes-dark-theme)))
+                     'stimmung-themes-dark)))
   (message "using doom theme: %s" doom-theme)
   (setq doom-theme theme-name))
 
