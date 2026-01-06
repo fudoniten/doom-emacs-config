@@ -12,11 +12,13 @@
 (setq native-comp-deferred-compilation-deny-list nil)
 
 ;; Appearance
-(use-package doom-two-tone-themes
+(use-package! doom-two-tone-themes
   :demand t)
 
-(use-package stimmung-themes
-  :demand t)
+(use-package! stimmung-themes
+  :demand t
+  :init (when-let ((path (locate-library "simmerung-themes-dark-theme")))
+          (add-to-list custom-theme-load-path (file-name-directory path))))
 
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
@@ -58,41 +60,41 @@
 ;; Packages
 
 
-;; (use-package transient
+;; (use-package! transient
 ;;   :ensure t)
 
 ;;;; Broken shit.
-;; (use-package aider
+;; (use-package! aider
 ;;   :ensure t
 ;;   :after transient
 ;;   :config
 ;;   (setq aider-args '("-4"))
 ;;   (require 'aider-doom))
 
-(use-package ivy-prescient)
-(use-package marginalia)
+(use-package! ivy-prescient)
+(use-package! marginalia)
 
-(use-package elpher)
-(use-package chatgpt-shell)
-(use-package restclient)
+(use-package! elpher)
+(use-package! chatgpt-shell)
+(use-package! restclient)
 
-(use-package org-roam)
+(use-package! org-roam)
 
-(use-package transient)
+(use-package! transient)
 
-(use-package aidermacs
+(use-package! aidermacs
   :ensure t
   :after transient)
-(use-package edit-server)
-(use-package eglot)
-(use-package nix-mode)
-(use-package kubernetes)
-(use-package gptel)
-(use-package ellama)
+(use-package! edit-server)
+(use-package! eglot)
+(use-package! nix-mode)
+(use-package! kubernetes)
+(use-package! gptel)
+(use-package! ellama)
 ;;;; Broken?
-;; (use-package graphviz-dot-mode)
+;; (use-package! graphviz-dot-mode)
 
-(use-package paredit
+(use-package! paredit
   :ensure nil
   :commands (paredit-mode)
   :hook ((clojure-mode . paredit-mode)
@@ -101,9 +103,9 @@
                 "M-(" #'paredit-wrap-round
                 "M-)" #'paredit-close-round))
 
-(use-package embark)
+(use-package! embark)
 
-(use-package bash-completion
+(use-package! bash-completion
   :commands bash-completion-dynamic-complete
   :hook ((shell-dynamic-complete-functions . bash-completion-dynamic-complete)
          (eshell-mode . my/eshell-mode-completion-hook))
