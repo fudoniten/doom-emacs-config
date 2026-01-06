@@ -15,10 +15,14 @@
 (use-package doom-two-tone-themes
   :demand t)
 
+(use-package stimmung-themes
+  :demand t)
+
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
-                     'doom-snazzy)))
+                     ;; 'doom-snazzy
+                     'stimmung-dark)))
   (message "using doom theme: %s" doom-theme)
   (setq doom-theme theme-name))
 
@@ -98,8 +102,6 @@
                 "M-)" #'paredit-close-round))
 
 (use-package embark)
-
-(use-package doom-two-tone-themes)
 
 (use-package bash-completion
   :commands bash-completion-dynamic-complete
