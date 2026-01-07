@@ -26,6 +26,8 @@
     '(font-lock-type-face          :inherit default)
     '(font-lock-variable-name-face :inherit default)
     '(font-lock-function-name-face :inherit default)
+    '(font-lock-doc-face           :inherit default)
+    '(font-lock-comment-face       :inherit default)
 
     ;; keep the “4 classes”
     ;;'(font-lock-string-face        :inherit default)   ; then add :foreground if you want
@@ -33,6 +35,19 @@
     ;;'(font-lock-constant-face      :inherit default)
     ;;'(font-lock-doc-face           :inherit font-lock-comment-face)
     ))
+
+(with-eval-after-load 'clojure-mode
+  (font-lock-add-keywords 'clojure-mode
+                          '(("^\\s-*\\(;;;+.*\\)$" 1 '(:inherit font-lock-comment-face :weight bold) t))
+                          'append)
+  (custom-set-faces!
+    '(font-lock-comment-face      :inherit default)
+    '(clojure-special-form-face   :inherit default)
+    '(clojure-macro-face          :inherit default)
+    '(clojure-keyword-face        :inherit default)
+    '(clojure-interop-method-face :inherit default)
+    '(clojure-namespace-face      :inherit default)
+    '(clojure-symbol-face         :inherit default)))
 
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
