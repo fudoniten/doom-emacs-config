@@ -11,8 +11,7 @@
 
 ;;; Leader keys
 (map! :leader
-      :desc "Search buffer"               "s"   #'counsel-grep-or-swiper
-      :desc "Search buffer with swiper"   "s"   #'swiper
+      :desc "Search buffer"               "s"   #'swiper
       :desc "Search buffer with swiper"   "C-s" #'swiper
       :desc "Evaluate line/region"        "e"   #'+eval/line-or-region
       (:prefix ("l" . "<localleader>")) ; bound locally

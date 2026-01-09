@@ -1,8 +1,7 @@
 ;;; site-functions.el -*- lexical-binding: t; -*-
 ;; Keywords: functions, emacs, utilities, text manipulation, buffer management, shell
 
-;;(require 'eshell)
-;;(require 'em-dirs)
+;;; Code:
 
 ;; Miscellaneous Useful Functions
 
@@ -38,10 +37,6 @@
   (newline)
   (forward-line -1)
   (indent-according-to-mode))
-
-(provide 'site-functions)
-
-;;; Code:
 
 ;; Utility Functions
 (defun kill-whitespace ()
@@ -227,17 +222,6 @@
     (let ((enable-recursive-minibuffers t))
       (visit-tags-table-buffer))
     (ido-completing-read "Project file " (tags-table-files) nil t)))
-
-(defun ensime-remote-connect (host port)
-  "Connect to an Ensime server at HOST and PORT."
-  (interactive (list
-                (read-from-minibuffer "Host: " ensime-default-server-host)
-                (read-from-minibuffer "Port: " (format "%d" ensime-default-port) nil t)))
-  (let ((c (ensime-connect host port))
-        (config (ensime-config-load "/Users/whunmr/lab/scala/.ensime")))
-    (ensime-set-config c config)
-    (setq ensime-buffer-connection c)
-    (message "Connected to Ensime server at %s:%s" host port)))
 
 ;; Miscellaneous
 (defun goto-match-paren (arg)

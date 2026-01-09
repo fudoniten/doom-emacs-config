@@ -14,9 +14,6 @@
 ;; Appearance
 (use-package doom-two-tone-themes)
 
-;; (use-package stimmung-themes
-;;     :init (when-let ((path (locate-library "stimmung-themes-dark-theme")))
-;;             (add-to-list 'custom-theme-load-path (file-name-directory path))))
 
 (after! doom-themes
   (custom-set-faces!
@@ -52,9 +49,8 @@
 (let* ((env-theme (getenv "DOOM_THEME"))
        (theme-name (if (and env-theme (not (string-empty-p env-theme)))
                        (intern env-theme)
-                     ;;'stimmung-themes-dark
                      'doom-snazzy)))
-  (message "using doom theme: %s" doom-theme)
+  (message "using doom theme: %s" theme-name)
   (setq doom-theme theme-name))
 
 (setq display-line-numbers-type t)
@@ -88,18 +84,6 @@
 
 ;; Packages
 
-
-;; (use-package transient
-;;   :ensure t)
-
-;;;; Broken shit.
-;; (use-package aider
-;;   :ensure t
-;;   :after transient
-;;   :config
-;;   (setq aider-args '("-4"))
-;;   (require 'aider-doom))
-
 (use-package ivy-prescient)
 (use-package marginalia)
 
@@ -120,8 +104,6 @@
 (use-package kubernetes)
 (use-package gptel)
 (use-package ellama)
-;;;; Broken?
-;; (use-package graphviz-dot-mode)
 
 (use-package paredit
   :ensure nil
@@ -142,7 +124,7 @@
             (add-hook 'completion-at-point-functions
                       'bash-completion-capf-nonexclusive nil t)))
 
-(require 'cl)
+(require 'cl-lib)
 (load! "site-functions.el")
 (setq-default tab-width 2)
 (setq inferior-lisp-program "sbcl")
@@ -203,7 +185,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
     (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
 
 (defun $magit-auto-revert-not-remote (orig-fun &rest args)
-  (unless (and buffer-file-name (file-remote-p buffer-filename))
+  (unless (and buffer-file-name (file-remote-p buffer-file-name))
     (apply orig-fun args)))
 
 (advice-add 'magit-turn-on-auto-revert-mode-if-desired
@@ -245,10 +227,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 ;;;;
 ;; Functions
 ;;;;
-(defun filter (condp lst)
-  "Filter list LST to only those elements matching CONDP."
-  (delq nil (mapcar (lambda (x) (and (funcall condp x) x)) lst)))
-
 (defun get-bash-path ()
   "Return paths from the bash PATH."
   (let* ((bash-path (bash-env-var "PATH"))
