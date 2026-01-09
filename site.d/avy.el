@@ -1,4 +1,4 @@
-;;; avy.el --- Description -*- lexical-binding: t; -*-
+;;; avy.el --- Avy hydra actions -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2025 Niten
 ;;
@@ -15,13 +15,9 @@
 ;;
 ;;; Commentary:
 ;;
-;;  Description
+;;  Avy hydra actions for enhanced navigation and text manipulation
 ;;
 ;;; Code:
-
-(provide 'avy-menus)
-;;; avy.el ends here
-;;; avy.el -*- lexical-binding: t; -*-
 
 (defvar fudo--avy-hydra-func nil
   "A variable to hold the command to be executed by Avy.")
@@ -261,3 +257,4 @@
       (alist-get ?z avy-dispatch-alist) #'zap-to-point)
 
 (provide 'avy-menus)
+;;; avy.el ends here
