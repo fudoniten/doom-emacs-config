@@ -104,6 +104,10 @@
 (use-package kubernetes)
 (use-package gptel)
 (use-package ellama)
+(use-package polymuse)
+(use-package canon)
+;;;; Broken?
+;; (use-package graphviz-dot-mode)
 
 (use-package paredit
   :ensure nil
