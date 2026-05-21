@@ -23,10 +23,4 @@
                ,(rx (or "#" "=begin")) ; Comment start
                ruby-forward-sexp nil))
 
-;; Configure Smart-Parens
-; Only want this for non-lisp languages
-;(smartparens-global-mode)
-;(show-smartparens-global-mode)
-(sp-with-modes '(rhtml-mode)
-  (sp-local-pair "<" ">")
-  (sp-local-pair "<%" "%>"))
+;; Smart-Parens: rhtml-mode pairs removed — this config uses web-mode instead.
