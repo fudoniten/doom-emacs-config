@@ -77,5 +77,16 @@
 
 (setq eshell-history-size 10000)
 
+;; eshell-syntax-highlighting: syntax highlighting in the eshell prompt
+;; Docs: https://github.com/akreisher/eshell-syntax-highlighting
+(use-package eshell-syntax-highlighting
+  :after eshell
+  :config (eshell-syntax-highlighting-global-mode 1))
+
+;; capf-autosuggest: fish-like right-arrow completion suggestions
+;; Docs: https://github.com/emacs-straight/capf-autosuggest
+(use-package capf-autosuggest
+  :hook (eshell-mode . capf-autosuggest-mode))
+
 (provide 'eshell-config)
 ;;; eshell.el ends here
