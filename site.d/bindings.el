@@ -38,7 +38,7 @@
 ;;; <leader> c --- code
       (:prefix-map ("c" . "code")
        :desc "Comment"                               "c"   #'comment-or-uncomment-region
-       :desc "Compile"                               "k"   #'compile
+       :desc "Compile"                               "K"   #'compile
        :desc "Recompile"                             "C"   #'recompile
        :desc "Jump to definition"                    "d"   #'+lookup/definition
        :desc "Jump to references"                    "D"   #'+lookup/references
@@ -177,22 +177,22 @@
           :desc "New Entry"           "j" #'org-journal-new-entry
           :desc "New Scheduled Entry" "J" #'org-journal-new-scheduled-entry
           :desc "Search Forever"      "s" #'org-journal-search-forever))
-       (:when (modulep! :lang org +roam)
+       (:when (modulep! :lang org +roam2)
          (:prefix ("r" . "roam")
-          :desc "Switch to buffer"              "b" #'org-roam-switch-to-buffer
+          :desc "Toggle roam buffer"            "b" #'org-roam-buffer-toggle
           :desc "Org Roam Capture"              "c" #'org-roam-capture
-          :desc "Find file"                     "f" #'org-roam-find-file
+          :desc "Find node"                     "f" #'org-roam-node-find
           :desc "Show graph"                    "g" #'org-roam-graph
-          :desc "Insert"                        "i" #'org-roam-insert
-          :desc "Insert (skipping org-capture)" "I" #'org-roam-insert-immediate
-          :desc "Org Roam"                      "r" #'org-roam
-          :desc "Tag"                           "t" #'org-roam-tag-add
-          :desc "Un-tag"                        "T" #'org-roam-tag-delete
+          :desc "Insert node"                   "i" #'org-roam-node-insert
+          :desc "Insert node (immediate)"       "I" #'org-roam-node-insert
+          :desc "Org Roam buffer"               "r" #'org-roam-buffer-toggle
+          :desc "Add tag"                       "t" #'org-roam-tag-add
+          :desc "Remove tag"                    "T" #'org-roam-tag-remove
           (:prefix ("d" . "by date")
-           :desc "Arbitrary date" "d" #'org-roam-dailies-find-date
-           :desc "Today"          "t" #'org-roam-dailies-find-today
-           :desc "Tomorrow"       "m" #'org-roam-dailies-find-tomorrow
-           :desc "Yesterday"      "y" #'org-roam-dailies-find-yesterday))))
+           :desc "Arbitrary date" "d" #'org-roam-dailies-goto-date
+           :desc "Today"          "t" #'org-roam-dailies-goto-today
+           :desc "Tomorrow"       "m" #'org-roam-dailies-goto-tomorrow
+           :desc "Yesterday"      "y" #'org-roam-dailies-goto-yesterday))))
 
 ;;; <leader> o --- open
       "o" nil             ; we need to unbind it first as Org claims this prefix
@@ -234,9 +234,9 @@
        (:when (modulep! :email mu4e)
          :desc "mu4e" "m" #'=mu4e)
        (:when (modulep! :email notmuch)
-         :desc "notmuch" "m" #'=notmuch)
+         :desc "notmuch" "n" #'=notmuch)
        (:when (modulep! :email wanderlust)
-         :desc "wanderlust" "m" #'=wanderlust))
+         :desc "wanderlust" "w" #'=wanderlust))
 
 
 ;;; <leader> p --- project

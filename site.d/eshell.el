@@ -5,8 +5,6 @@
 
 (require 'dash)
 (require 'cl-lib)
-(require 'message) ; For logging
-(require 's)
 (require 'esh-util)
 
 ;;                     _
@@ -53,13 +51,6 @@
         (message "Editing file: %s" file)
         (find-file file))
     (message "File not found: %s" file)))
-
-(defun str-empty-p (str)
-  (string= str ""))
-
-(defun get-last-line-from-output (output)
-  (let ((out (split-string output "\n")))
-    (last (cl-remove-if #'str-empty-p out))))
 
 ;;                                  _
 ;;                                 | |

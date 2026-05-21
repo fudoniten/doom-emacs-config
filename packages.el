@@ -51,6 +51,10 @@
 
 (maybe-package! bash-completion)
 
+;; Personal/local packages — add :recipe (:host github :repo "...") when publishing
+;; (maybe-package! polymuse)
+;; (maybe-package! canon)
+
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:
 ;; https://github.com/raxod502/straight.el#the-recipe-format

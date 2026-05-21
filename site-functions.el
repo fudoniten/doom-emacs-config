@@ -104,11 +104,8 @@
 (defun untabify-this-file ()
   "Untabify the entire current buffer."
   (interactive)
-  (save-excursion
-    (end-of-buffer)
-    (let ((pos (point)))
-      (untabify 0 pos)
-      (message "Untabified the current buffer"))))
+  (untabify (point-min) (point-max))
+  (message "Untabified the current buffer"))
 
 (defun yank-buffer-path ()
   "Yank the current buffer's path."

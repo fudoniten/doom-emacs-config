@@ -19,9 +19,6 @@
 ;;
 ;;; Code:
 
-(defvar fudo--avy-hydra-func nil
-  "A variable to hold the command to be executed by Avy.")
-
 (defun kill-thing-at-point (thing)
   "Return a lambda to kill the THING at point."
   (lambda (pt)
@@ -88,14 +85,15 @@
     t))
 
 (defun mark-thing-at-point (thing)
-  "Return a lambda to mark the THING at point."
+  "Return a lambda to mark the THING at point.
+Unlike kill/copy, marking is intentionally a side effect so we do NOT
+wrap in save-mark-and-excursion."
   (lambda (pt)
-    (save-mark-and-excursion
-      (goto-char pt)
-      (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
-        (push-mark start nil t)
-        (goto-char end)
-        (activate-mark)))
+    (goto-char pt)
+    (cl-destructuring-bind (start . end) (bounds-of-thing-at-point thing)
+      (push-mark start nil t)
+      (goto-char end)
+      (activate-mark))
     t))
 
 (defun swap-thing-at-point (thing)

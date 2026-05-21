@@ -104,8 +104,8 @@
 (use-package kubernetes)
 (use-package gptel)
 (use-package ellama)
-(use-package polymuse)
-(use-package canon)
+(use-package polymuse :if (locate-library "polymuse"))
+(use-package canon   :if (locate-library "canon"))
 ;;;; Broken?
 ;; (use-package graphviz-dot-mode)
 
@@ -285,15 +285,18 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 (global-subword-mode 1)
 
 ;; Scratch Buffer
-(defadvice kill-buffer (around kill-buffer-around-advice activate)
-  "Bury the *scratch* buffer, but never kill it."
-  (let ((buffer-to-kill (ad-get-arg 0)))
-    (if (equal buffer-to-kill "*scratch*")
-        (bury-buffer)
-      ad-do-it)))
+(advice-add 'kill-buffer :around
+  (lambda (orig-fun &rest args)
+    "Bury the *scratch* buffer, but never kill it."
+    (let* ((buf (or (car args) (current-buffer)))
+           (buf-name (if (bufferp buf) (buffer-name buf) buf)))
+      (if (equal buf-name "*scratch*")
+          (bury-buffer)
+        (apply orig-fun args)))))
 
 (defvar *persistent-scratch-location*
-  (expand-file-name "emacs/persistent-scratch.el" (getenv "XDG_STATE_HOME")))
+  (expand-file-name "emacs/persistent-scratch.el"
+                    (or (getenv "XDG_STATE_HOME") "~/.local/state")))
 
 (defun save-persistent-scratch ()
   "Write the contents of *scratch* to the file name
@@ -338,7 +341,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
                                 (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
          (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
-         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-filename))))
+         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-file-name))))
          (conf-dirs (append system-conf-dirs (list site-config))))
     (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
     (load-configuration-directories conf-dirs)))
