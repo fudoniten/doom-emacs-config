@@ -17,8 +17,6 @@
      (package! ,pkg ,@args)))
 
 ;; Basic Emacs functionality
-(maybe-package! ivy-prescient)
-(maybe-package! marginalia)
 
 ;; Communication Packages
 (maybe-package! ellama)
@@ -41,15 +39,47 @@
 (maybe-package! nix-mode)
 (maybe-package! paredit)
 
-;; Embark
-(maybe-package! embark)
-
 (maybe-package! doom-two-tone-themes
                 :recipe (:host github
                          :repo "eliraz-refael/doom-two-tone-themes"
                          :files ("doom-two-tone-themes.el" "themes/*.el")))
 
 (maybe-package! bash-completion)
+
+;; Nix
+(maybe-package! nix-ts-mode)
+
+;; VCS / Git
+(maybe-package! diff-hl)
+(maybe-package! magit-delta)
+(maybe-package! git-link)
+
+;; Org
+(maybe-package! org-modern)
+
+;; Tree-sitter
+(maybe-package! treesit-auto)
+
+;; Terminal
+(maybe-package! eat)
+
+;; Common Lisp / SLY
+(maybe-package! sly-quicklisp)
+(maybe-package! sly-asdf)
+
+;; Clojure / Babashka
+(maybe-package! ob-babashka)
+
+;; Python
+(maybe-package! pet)
+
+;; Eshell
+(maybe-package! eshell-syntax-highlighting)
+(maybe-package! capf-autosuggest)
+
+;; Personal/local packages — add :recipe (:host github :repo "...") when publishing
+;; (maybe-package! polymuse)
+;; (maybe-package! canon)
 
 ;; To install a package directly from a remote git repo, you must specify a
 ;; `:recipe'. You'll find documentation on what `:recipe' accepts here:

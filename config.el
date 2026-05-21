@@ -84,9 +84,6 @@
 
 ;; Packages
 
-(use-package ivy-prescient)
-(use-package marginalia)
-
 (use-package elpher)
 (use-package chatgpt-shell)
 (use-package restclient)
@@ -104,8 +101,8 @@
 (use-package kubernetes)
 (use-package gptel)
 (use-package ellama)
-(use-package polymuse)
-(use-package canon)
+(use-package polymuse :if (locate-library "polymuse"))
+(use-package canon   :if (locate-library "canon"))
 ;;;; Broken?
 ;; (use-package graphviz-dot-mode)
 
@@ -117,8 +114,6 @@
   :config (map! :map paredit-mode-map
                 "M-(" #'paredit-wrap-round
                 "M-)" #'paredit-close-round))
-
-(use-package embark)
 
 (use-package bash-completion
   :commands bash-completion-dynamic-complete
@@ -143,10 +138,6 @@
   (after! eglot
     (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
     (add-hook 'nix-mode-hook 'eglot-ensure)))
-
-;; Marginalia
-(after! marginalia
-  (marginalia-mode))
 
 ;; TLS Advice
 (defun tls-nocheck-error-advice (orig-fun &rest args)
@@ -237,11 +228,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
          (path-dirs (split-string bash-path ":")))
     (filter #'file-directory-p path-dirs)))
 
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-
 (defun load-configuration-directories (dirs)
   "Load all configuration files from the given list of `DIRS'."
   (dolist (dir dirs)
@@ -267,7 +253,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
           (lambda ()
             (setenv "PAGER" "cat")
             (setenv "EDITOR" "emacsclient")))
-(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
 ;; System Specific Settings
 (when (eq system-type 'darwin)
@@ -281,19 +266,21 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 
 ;; Global Modes
 (global-prettify-symbols-mode 1)
-(ivy-prescient-mode 1)
 (global-subword-mode 1)
 
 ;; Scratch Buffer
-(defadvice kill-buffer (around kill-buffer-around-advice activate)
-  "Bury the *scratch* buffer, but never kill it."
-  (let ((buffer-to-kill (ad-get-arg 0)))
-    (if (equal buffer-to-kill "*scratch*")
-        (bury-buffer)
-      ad-do-it)))
+(advice-add 'kill-buffer :around
+  (lambda (orig-fun &rest args)
+    "Bury the *scratch* buffer, but never kill it."
+    (let* ((buf (or (car args) (current-buffer)))
+           (buf-name (if (bufferp buf) (buffer-name buf) buf)))
+      (if (equal buf-name "*scratch*")
+          (bury-buffer)
+        (apply orig-fun args)))))
 
 (defvar *persistent-scratch-location*
-  (expand-file-name "emacs/persistent-scratch.el" (getenv "XDG_STATE_HOME")))
+  (expand-file-name "emacs/persistent-scratch.el"
+                    (or (getenv "XDG_STATE_HOME") "~/.local/state")))
 
 (defun save-persistent-scratch ()
   "Write the contents of *scratch* to the file name
@@ -312,24 +299,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
 
-(defun filter-existing-dirs (dirs)
-  "Remove any nonexistent directories from a list."
-  (cl-remove-if-not #'file-directory-p dirs))
-
-(defun cross-product-dirs (bases subs)
-  "Build dirs from all combinations of [bases] x [subs], then filter for existing."
-  (filter-existing-dirs
-   (flatmap
-    (lambda (base)
-      (mapcar
-       (lambda (sub)
-         (expand-file-name sub base))
-       subs))
-    bases)))
-
-(defun getenv-or-empty (var)
-  (or (getenv var) ""))
-
 (defun load-all-configurations ()
   "Load configuration directories from various system and user-defined paths."
   (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR" "XDG_CONFIG_HOME"))
@@ -338,7 +307,7 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
                                 (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
          (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
-         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-filename))))
+         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-file-name))))
          (conf-dirs (append system-conf-dirs (list site-config))))
     (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
     (load-configuration-directories conf-dirs)))

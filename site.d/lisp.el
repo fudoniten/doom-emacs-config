@@ -9,8 +9,10 @@
                             lisp-mode-hook
                             emacs-lisp-mode-hook
                             clojure-mode-hook
+                            clojurec-mode-hook
                             racket-mode-hook
-                            clojurescript-mode-hook))
+                            clojurescript-mode-hook
+                            sly-mrepl-mode-hook))
 
 (defun bind-hook-to-modes (hook modes)
   "Bind HOOK to all MODES."
