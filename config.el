@@ -58,7 +58,7 @@
 ;; Org Mode Directories
 (let* ((org-dir (if-let ((org-env-dir (getenv "EMACS_ORG_DIRECTORY")))
                     (file-truename org-env-dir)
-                  (file-truename "~/Notes")))
+                  (expand-file-name "Notes" (getenv "HOME"))))
        (roam-dir (format "%s/roam" org-dir)))
   (make-directory roam-dir 'parents)
   (setq org-directory org-dir)

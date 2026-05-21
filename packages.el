@@ -18,6 +18,9 @@
 
 ;; Basic Emacs functionality
 
+;; Clojure / Babashka
+(maybe-package! ob-babashka)
+
 ;; Communication Packages
 (maybe-package! ellama)
 (maybe-package! elpher)

@@ -37,7 +37,7 @@
   (message "Fetching bash environment variable: %s" varname)
   (replace-regexp-in-string "\n$" ""
                             (shell-command-to-string
-                             (string-join (list ". ~/.bash_profile; echo $" varname)))))
+                             (string-join (list ". " (expand-file-name ".bash_profile" (getenv "HOME")) "; echo $" varname)))))
 
 ;; Configuration Loading Utilities
 ;; (moved here from config.el so they are available when load-all-configurations runs)
