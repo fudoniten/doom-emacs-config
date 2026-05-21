@@ -11,8 +11,8 @@
 
 ;;; Leader keys
 (map! :leader
-      :desc "Search buffer"               "s"   #'swiper
-      :desc "Search buffer with swiper"   "C-s" #'swiper
+      :desc "Search buffer"               "s"   #'consult-line
+      :desc "Search buffer"               "C-s" #'consult-line
       :desc "Evaluate line/region"        "e"   #'+eval/line-or-region
       (:prefix ("l" . "<localleader>")) ; bound locally
       (:prefix ("!" . "checkers"))      ; bound by flycheck
@@ -23,7 +23,7 @@
       :desc "Open next line"              "C-n" #'open-and-indent-line
       :desc "Increase font size"          "+"   #'text-scale-increase
       :desc "Decrease font size"          "-"   #'text-scale-decrease
-      :desc "Jump to character"           "."   #'avy-goto-char
+      :desc "Jump to character (timer)"   "."   #'avy-goto-char-timer
       :desc "Jump to line"                ","   #'avy-goto-line
       :desc "Open eshell here"            "!"   #'eshell-here
 
@@ -32,8 +32,9 @@
 
 ;;; <leader> V --- views
       (:prefix-map ("V" . "views")
-       :desc "Add view"               "v"   #'ivy-push-view
-       :desc "Pop view"               "p"   #'ivy-pop-view)
+       :desc "Set bookmark"      "v" #'bookmark-set
+       :desc "Jump to bookmark"  "j" #'consult-bookmark
+       :desc "Delete bookmark"   "d" #'bookmark-delete)
 
 ;;; <leader> c --- code
       (:prefix-map ("c" . "code")
@@ -44,12 +45,12 @@
        :desc "Jump to references"                    "D"   #'+lookup/references
        :desc "Evaluate buffer/region"                "e"   #'+eval/buffer-or-region
        :desc "Evaluate & replace region"             "E"   #'+eval/region-and-replace
-       :desc "Find file"                             "f"   #'find-file
        :desc "Format buffer/region"                  "F"   #'+format/region-or-buffer
        :desc "Find implementations"                  "i"   #'+lookup/implementations
        :desc "Jump to documentation"                 "k"   #'+lookup/documentation
        :desc "Send to repl"                          "s"   #'+eval/send-region-to-repl
        :desc "Find type definition"                  "t"   #'+lookup/type-definition
+       :desc "Kill matching lines"                    "M"   #'kill-matching-lines
        :desc "Delete trailing whitespace"            "w"   #'delete-trailing-whitespace
        :desc "Delete trailing newlines"              "W"   #'doom/delete-trailing-newlines
        :desc "List errors"                           "x"   #'flymake-show-diagnostics-buffer
@@ -116,7 +117,7 @@
 ;;; <leader> S --- search
       (:prefix-map ("S" . "search")
        :desc "Search project for symbol"    "." #'+default/search-project-for-symbol-at-point
-       :desc "Search buffer"                "b" #'swiper
+       :desc "Search buffer"                "b" #'consult-line
        :desc "Search current directory"     "d" #'+default/search-cwd
        :desc "Search other directory"       "D" #'+default/search-other-cwd
        :desc "Locate file"                  "f" #'+lookup/file
@@ -131,7 +132,7 @@
        :desc "Search project"               "p" #'+default/search-project
        :desc "Search other project"         "P" #'+default/search-other-project
        :desc "Search buffer"                "s" #'+default/search-buffer
-       :desc "Search buffer for thing at point" "S" #'swiper-isearch-thing-at-point
+       :desc "Search buffer for thing at point" "S" #'consult-line
        :desc "Dictionary"                   "t" #'+lookup/dictionary-definition
        :desc "Thesaurus"                    "T" #'+lookup/synonyms)
 
@@ -354,7 +355,9 @@
           :desc "Browse an issue"           "i"   #'forge-browse-issue
           :desc "Browse a pull request"     "p"   #'forge-browse-pullreq
           :desc "Browse issues"             "I"   #'forge-browse-issues
-          :desc "Browse pull requests"      "P"   #'forge-browse-pullreqs)
+          :desc "Browse pull requests"      "P"   #'forge-browse-pullreqs
+          :desc "Copy link to line"         "l"   #'git-link
+          :desc "Copy link to commit"       "L"   #'git-link-commit)
          (:prefix ("l" . "list")
                   (:when (modulep! :tools gist)
                     :desc "List gists"               "g"   #'gist-list)
@@ -447,9 +450,9 @@
       "M--" #'doom/decrease-font-size
 
       ;;; search
-      (:when (modulep! :completion ivy)
-        "C-S-s"        #'swiper
-        "C-S-r"        #'ivy-resume)
+      (:when (modulep! :completion vertico)
+        "C-S-s"        #'consult-line
+        "C-S-r"        #'consult-resume)
       (:when (modulep! :completion helm)
         "C-S-s"        #'swiper-helm
         "C-S-r"        #'helm-resume)
@@ -459,19 +462,15 @@
         "M-SPC"     #'objed-activate)
 
       ;;; buffer management
-      (:when (modulep! :completion ivy)
-        "C-x b"      #'ivy-switch-buffer
-        "C-x 4 b"    #'ivy-switch-buffer-other-window)
-      (:when (not (modulep! :completion ivy))
+      (:when (modulep! :completion vertico)
+        "C-x b"      #'consult-buffer
+        "C-x 4 b"    #'consult-buffer-other-window)
+      (:when (not (or (modulep! :completion vertico) (modulep! :completion ivy)))
         "C-x b"       #'switch-to-buffer
         "C-x 4 b"     #'switch-to-buffer-other-window)
 
       (:when (modulep! :ui workspaces)
-        "C-x B"       #'persp-switch-to-buffer
-        "C-x b"       #'switch-to-buffer
-        "C-x 4 b"     #'switch-to-buffer-other-window
-        (:when (modulep! :completion ivy)
-          "C-x 4 B"   #'+ivy/switch-workspace-buffer-other-window))
+        "C-x B"       #'persp-switch-to-buffer)
       "C-x C-b"     #'ibuffer
       "C-x K"       #'doom/kill-this-buffer-in-all-windows
 
@@ -489,7 +488,6 @@
        [C-tab]      #'company-complete-common-or-cycle
        [tab]        #'company-complete-common-or-cycle
        [backtab]    #'company-select-previous
-       "C-RET"      #'counsel-company
        :map company-search-map
        "C-n"        #'company-search-repeat-forward
        "C-p"        #'company-search-repeat-backward
@@ -531,17 +529,9 @@
        :map Info-mode-map
        "o" #'link-hint-open-link)
 
-      ;;; ivy & counsel
-      (:when (modulep! :completion ivy)
-        (:after ivy
-         :map ivy-minibuffer-map
-         "TAB"   #'ivy-alt-done
-         "C-g"   #'keyboard-escape-quit)
-        (:after counsel
-         :map counsel-ag-map
-         "C-SPC" #'ivy-call-and-recenter ; preview
-         "M-RET" #'+ivy/git-grep-other-window-action)
-        "C-M-y"   #'counsel-yank-pop)
+      ;;; consult
+      (:when (modulep! :completion vertico)
+        "C-M-y"   #'consult-yank-pop)
 
       ;;; neotree
       (:when (modulep! :ui neotree)
@@ -592,16 +582,16 @@
 
 (map! :leader
       (:when (modulep! :editor fold)
-        (:prefix ("C-F" . "fold")
-                 "C-d"     #'vimish-fold-delete
-                 "C-a C-d" #'vimish-fold-delete-all
-                 "C-f"     #'+fold/toggle
-                 "C-a C-f" #'+fold/close-all
-                 "C-u"     #'+fold/open
-                 "C-a C-u" #'+fold/open-all)))
+        (:prefix-map ("z" . "fold")
+         :desc "Toggle fold"  "z" #'+fold/toggle
+         :desc "Open fold"    "o" #'+fold/open
+         :desc "Open all"     "O" #'+fold/open-all
+         :desc "Close all"    "c" #'+fold/close-all
+         :desc "Delete fold"  "d" #'vimish-fold-delete
+         :desc "Delete all"   "D" #'vimish-fold-delete-all)))
 
 (map! "M-g"     #'goto-line
-      "C-s"     #'swiper
+      "C-s"     #'consult-line
       "C-x C-m" #'execute-extended-command
       "C-a"     #'beginning-of-line-text
       "C-A"     #'beginning-of-line
@@ -626,7 +616,10 @@
       "C-M-n"   #'mc/mark-next-like-this
       "M-p"     #'mc/mark-previous-lines
       "M-n"     #'mc/mark-next-lines
-      "C-x b"   #'ivy-switch-buffer
+      "M-<up>"  #'move-text-up
+      "M-<down>" #'move-text-down
+      "C-c %"   #'goto-match-paren
+      "C-x b"   #'consult-buffer
       "C-M-SPC" #'mark-whole-sexp
       [C-M-backspace] #'backward-kill-sexp)
 
