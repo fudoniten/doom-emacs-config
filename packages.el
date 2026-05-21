@@ -18,9 +18,6 @@
 
 ;; Basic Emacs functionality
 
-;; Clojure / Babashka
-(maybe-package! ob-babashka)
-
 ;; Communication Packages
 (maybe-package! ellama)
 (maybe-package! elpher)
@@ -69,9 +66,6 @@
 ;; Common Lisp / SLY
 (maybe-package! sly-quicklisp)
 (maybe-package! sly-asdf)
-
-;; Clojure / Babashka
-(maybe-package! ob-babashka)
 
 ;; Python
 (maybe-package! pet)
