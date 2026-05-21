@@ -84,9 +84,6 @@
 
 ;; Packages
 
-(use-package ivy-prescient)
-(use-package marginalia)
-
 (use-package elpher)
 (use-package chatgpt-shell)
 (use-package restclient)
@@ -118,8 +115,6 @@
                 "M-(" #'paredit-wrap-round
                 "M-)" #'paredit-close-round))
 
-(use-package embark)
-
 (use-package bash-completion
   :commands bash-completion-dynamic-complete
   :hook ((shell-dynamic-complete-functions . bash-completion-dynamic-complete)
@@ -143,10 +138,6 @@
   (after! eglot
     (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
     (add-hook 'nix-mode-hook 'eglot-ensure)))
-
-;; Marginalia
-(after! marginalia
-  (marginalia-mode))
 
 ;; TLS Advice
 (defun tls-nocheck-error-advice (orig-fun &rest args)
@@ -237,11 +228,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
          (path-dirs (split-string bash-path ":")))
     (filter #'file-directory-p path-dirs)))
 
-(defun org-summary-todo (n-done n-not-done)
-  "Switch entry to DONE when all subentries are done, to TODO otherwise."
-  (let (org-log-done org-log-states)   ; turn off logging
-    (org-todo (if (= n-not-done 0) "DONE" "TODO"))))
-
 (defun load-configuration-directories (dirs)
   "Load all configuration files from the given list of `DIRS'."
   (dolist (dir dirs)
@@ -267,7 +253,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
           (lambda ()
             (setenv "PAGER" "cat")
             (setenv "EDITOR" "emacsclient")))
-(add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
 ;; System Specific Settings
 (when (eq system-type 'darwin)
@@ -281,7 +266,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 
 ;; Global Modes
 (global-prettify-symbols-mode 1)
-(ivy-prescient-mode 1)
 (global-subword-mode 1)
 
 ;; Scratch Buffer
@@ -314,24 +298,6 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
     (with-current-buffer (get-buffer "*scratch*")
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
-
-(defun filter-existing-dirs (dirs)
-  "Remove any nonexistent directories from a list."
-  (cl-remove-if-not #'file-directory-p dirs))
-
-(defun cross-product-dirs (bases subs)
-  "Build dirs from all combinations of [bases] x [subs], then filter for existing."
-  (filter-existing-dirs
-   (flatmap
-    (lambda (base)
-      (mapcar
-       (lambda (sub)
-         (expand-file-name sub base))
-       subs))
-    bases)))
-
-(defun getenv-or-empty (var)
-  (or (getenv var) ""))
 
 (defun load-all-configurations ()
   "Load configuration directories from various system and user-defined paths."
