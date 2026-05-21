@@ -92,6 +92,13 @@
 
 (use-package transient)
 
+;; Fix for consult-buffer error in Doom's vertico module
+;; The Doom config tries to customize invalid source names
+(after! consult
+  (consult-customize
+   consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
+   :preview-key "C-SPC"))
+
 (use-package aidermacs
   :ensure t
   :after transient)
