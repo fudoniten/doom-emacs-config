@@ -628,6 +628,15 @@
 (global-unset-key [down-mouse-2])
 (global-unset-key [mouse-2])
 
+;; C-x C-m is identical to C-x RET (both are ASCII 13 / carriage return).
+;; Emacs normally maps C-x RET to mule-keymap for encoding commands; some
+;; packages re-establish that prefix late in the load sequence, overriding
+;; the map! binding above.  Re-asserting it in after-init-hook ensures it
+;; wins regardless of load order.
+(add-hook 'after-init-hook
+  (lambda ()
+    (define-key global-map (kbd "C-x C-m") #'execute-extended-command)))
+
 (map! :map paredit-mode-map
       "C-c }" #'paredit-forward-barf-sexp
       "C-c {" #'paredit-backward-barf-sexp
