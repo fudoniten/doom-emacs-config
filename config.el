@@ -93,8 +93,20 @@
 (use-package transient)
 
 ;; Fix for consult-buffer error in Doom's vertico module
-;; The Doom config tries to customize invalid source names
+;; Explicitly set the correct buffer sources with double-dash names
 (after! consult
+  ;; Set the sources that consult-buffer should use
+  (setq consult-buffer-sources
+        '(consult--source-hidden-buffer
+          consult--source-modified-buffer
+          consult--source-buffer
+          consult--source-recent-file
+          consult--source-file-register
+          consult--source-bookmark
+          consult--source-project-buffer-hidden
+          consult--source-project-recent-file-hidden))
+  
+  ;; Customize preview behavior
   (consult-customize
    consult--source-recent-file consult--source-project-recent-file consult--source-bookmark
    :preview-key "C-SPC"))
