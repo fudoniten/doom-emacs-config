@@ -92,10 +92,25 @@
 
 (use-package transient)
 
-;; Customize consult preview behavior.
-;; Use consult-customize with commands (the stable public API) rather than
-;; internal consult--source-* variables, which change between versions.
+;; consult--customize-put calls (message ...) rather than (error ...) when it
+;; receives a symbol that is neither a command nor a properly-formed source
+;; plist.  This happens when Doom's vertico module and the installed consult
+;; version disagree on source naming conventions (e.g. single-dash
+;; consult-source-* vs double-dash consult--source-*).  Silently skip invalid
+;; entries so the message doesn't appear and valid customizations still apply.
 (after! consult
+  (define-advice consult--customize-put
+      (:filter-args (args) +consult--skip-invalid-sources)
+    "Filter out symbols that are neither commands nor consult source plists."
+    (cons (seq-filter
+           (lambda (sym)
+             (or (commandp sym)
+                 (and (boundp sym)
+                      (plist-get (symbol-value sym) :name))))
+           (car args))
+          (cdr args)))
+
+  ;; Customize preview behavior using the stable command API.
   (consult-customize
    consult-buffer consult-bookmark consult-recent-file
    :preview-key "C-SPC"))
