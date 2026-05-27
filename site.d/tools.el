@@ -16,8 +16,12 @@
 ;; magit-delta: syntax-highlighted diffs in Magit using delta
 ;; Requires delta: https://github.com/dandavison/delta
 ;; Install: nix-env -iA nixpkgs.delta  or  cargo install git-delta
+;; Guard with :if so the hook is never added when delta isn't on PATH —
+;; activating magit-delta without the binary corrupts Magit section text
+;; properties, causing "(t)" in section headers and "Cannot hide root section".
 (use-package magit-delta
   :after magit
+  :if (executable-find "delta")
   :hook (magit-mode . magit-delta-mode))
 
 ;; git-link: copy GitHub/GitLab/etc. URLs for current line or region
