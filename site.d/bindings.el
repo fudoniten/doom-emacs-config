@@ -271,6 +271,17 @@
        :desc "Restart & restore Emacs"      "r" #'doom/restart-and-restore
        :desc "Restart Emacs"                "R" #'doom/restart)
 
+;;; <leader> a --- AI
+      (:prefix-map ("a" . "AI")
+       :desc "Open agent shell"     "a" #'agent-shell
+       :desc "gptel"                "g" #'gptel
+       :desc "gptel menu"           "G" #'gptel-menu
+       :desc "ellama chat"          "e" #'ellama-chat
+       (:prefix-map ("d" . "aidermacs")
+        :desc "Aidermacs menu"      "d" #'aidermacs-transient-menu
+        :desc "Add file"            "f" #'aidermacs-add-current-file
+        :desc "Drop file"           "F" #'aidermacs-drop-current-file))
+
 ;;; <leader> & --- snippets
       (:prefix-map ("&" . "snippets")
        :desc "New snippet"           "n" #'yas-new-snippet
