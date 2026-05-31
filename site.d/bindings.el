@@ -271,15 +271,6 @@
        :desc "Restart & restore Emacs"      "r" #'doom/restart-and-restore
        :desc "Restart Emacs"                "R" #'doom/restart)
 
-;;; <leader> a --- aider
-      (:prefix-map ("a" . "aider")
-       :desc "Function or region refactor" "f" #'aider-function-or-region-refactor
-       :desc "Implement TODO" "t" #'aider-implement-todo
-       :desc "Write unit test" "u" #'aider-write-unit-test
-       :desc "Ask question" "q" #'aider-ask-question
-       :desc "Start software planning" "p" #'aider-start-software-planning
-       :desc "Add current file or dired marked files" "a" #'aider-add-current-file-or-dired-marked-files)
-
 ;;; <leader> & --- snippets
       (:prefix-map ("&" . "snippets")
        :desc "New snippet"           "n" #'yas-new-snippet
