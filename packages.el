@@ -22,6 +22,7 @@
 (maybe-package! ellama)
 (maybe-package! elpher)
 (maybe-package! chatgpt-shell)
+(maybe-package! agent-shell)
 (maybe-package! restclient)
 
 ;; Org and Note-taking
