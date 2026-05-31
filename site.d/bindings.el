@@ -274,6 +274,7 @@
 ;;; <leader> a --- AI
       (:prefix-map ("a" . "AI")
        :desc "Open agent shell"     "a" #'agent-shell
+       :desc "New agent shell"      "A" #'agent-shell-new-shell
        :desc "gptel"                "g" #'gptel
        :desc "gptel menu"           "G" #'gptel-menu
        :desc "ellama chat"          "e" #'ellama-chat
