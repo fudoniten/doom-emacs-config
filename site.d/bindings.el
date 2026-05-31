@@ -278,6 +278,7 @@
        :desc "gptel"                "g" #'gptel
        :desc "gptel menu"           "G" #'gptel-menu
        :desc "ellama chat"          "e" #'ellama-chat
+       :desc "Hermes agent"         "h" #'hermes-agent-connect
        (:prefix-map ("d" . "aidermacs")
         :desc "Aidermacs menu"      "d" #'aidermacs-transient-menu
         :desc "Add file"            "f" #'aidermacs-add-current-file
