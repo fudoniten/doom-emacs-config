@@ -37,4 +37,25 @@ Reads connection details from environment variables:
             (gptel-model   (intern model)))
         (gptel "*Hermes*")))))
 
+(after! ellama
+  (defun hermes-agent-connect-ellama ()
+    "Open an ellama chat with the local Hermes agent.
+Sets ellama-provider from environment variables and opens an interactive chat:
+  HERMES_AGENT_URL   - base URL, e.g. http://localhost:8080/v1/
+  HERMES_AGENT_MODEL - model name
+  HERMES_AGENT_TOKEN - API token (may be empty for unauthenticated agents)"
+    (interactive)
+    (let* ((url      (or (getenv "HERMES_AGENT_URL")
+                         (user-error "HERMES_AGENT_URL is not set")))
+           (model    (or (getenv "HERMES_AGENT_MODEL")
+                         (user-error "HERMES_AGENT_MODEL is not set")))
+           (token    (or (getenv "HERMES_AGENT_TOKEN") ""))
+           (base-url (if (string-suffix-p "/" url) url (concat url "/"))))
+      (setq ellama-provider
+            (make-llm-openai-compatible
+              :key        token
+              :chat-model model
+              :url        base-url))
+      (call-interactively #'ellama-chat))))
+
 (provide 'hermes)
