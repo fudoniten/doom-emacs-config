@@ -85,7 +85,7 @@
 ;; Packages
 
 (use-package elpher)
-(use-package chatgpt-shell)
+(use-package agent-shell)
 (use-package restclient)
 
 (use-package org-roam)
