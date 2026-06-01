@@ -61,7 +61,7 @@ corresponding `hermes-agent-*' custom variable.  The config file at
            (host     (url-host parsed))
            (port     (url-port parsed))
            (path     (url-filename parsed))
-           (hostport (if (and port (> port 0))
+           (hostport (if (and port (numberp port) (> port 0))
                          (format "%s:%d" host port)
                        host))
            (endpoint (if (and path
@@ -69,15 +69,21 @@ corresponding `hermes-agent-*' custom variable.  The config file at
                               (not (string= path "/")))
                          path
                        "/v1/chat/completions"))
+           (model-sym (intern model))
            (backend  (gptel-make-openai "Hermes"
                        :protocol scheme
                        :host     hostport
                        :endpoint endpoint
-                       :key      token
-                       :models   (list (intern model)))))
-      (let ((gptel-backend backend)
-            (gptel-model   (intern model)))
-        (gptel "*Hermes*")))))
+                       :key      (lambda () token)
+                       :models   (list model-sym)))
+           (buf (gptel "*Hermes*")))
+      ;; gptel sets `gptel-backend' / `gptel-model' buffer-locally from the
+      ;; global values during mode init; dynamic `let' bindings don't survive
+      ;; that, so explicitly assign them in the new buffer.
+      (with-current-buffer buf
+        (setq-local gptel-backend backend
+                    gptel-model   model-sym))
+      (pop-to-buffer buf))))
 
 (after! ellama
   (defun hermes-agent-connect-ellama ()
@@ -87,6 +93,9 @@ corresponding `hermes-agent-*' custom variable.  The config file at
 `hermes-local-config-file' is loaded at startup and may set those variables."
     (interactive)
     (require 'llm-openai)
+    ;; `ellama-chat' references `ellama-context-format', defined in
+    ;; ellama-context.el and not autoloaded.
+    (require 'ellama-context)
     (let* ((url      (hermes-agent--resolve "HERMES_AGENT_URL"   hermes-agent-url   "URL"))
            (model    (hermes-agent--resolve "HERMES_AGENT_MODEL" hermes-agent-model "model"))
            (token    (or (getenv "HERMES_AGENT_TOKEN") hermes-agent-token ""))
