@@ -1,33 +1,6 @@
 ;;; site.d/hermes.el -*- lexical-binding: t; -*-
 
 (after! gptel
-  ;; If env vars are already set at load time, use Hermes as the default backend.
-  (when-let* ((url   (getenv "HERMES_AGENT_URL"))
-              (model (getenv "HERMES_AGENT_MODEL")))
-    (require 'url-parse)
-    (let* ((token    (or (getenv "HERMES_AGENT_TOKEN") ""))
-           (parsed   (url-generic-parse-url url))
-           (scheme   (url-type parsed))
-           (host     (url-host parsed))
-           (port     (url-port parsed))
-           (path     (url-filename parsed))
-           (hostport (if (and port (> port 0))
-                         (format "%s:%d" host port)
-                       host))
-           (endpoint (if (and path
-                              (not (string-empty-p path))
-                              (not (string= path "/")))
-                         path
-                       "/v1/chat/completions"))
-           (backend  (gptel-make-openai "Hermes"
-                       :protocol scheme
-                       :host     hostport
-                       :endpoint endpoint
-                       :key      token
-                       :models   (list (intern model)))))
-      (setq gptel-backend backend
-            gptel-model   (intern model))))
-
   (defun hermes-agent-connect ()
     "Open a gptel chat buffer connected to the local Hermes agent.
 Reads connection details from environment variables:
