@@ -64,11 +64,13 @@ corresponding `hermes-agent-*' custom variable.  The config file at
            (hostport (if (and port (numberp port) (> port 0))
                          (format "%s:%d" host port)
                        host))
-           (endpoint (if (and path
-                              (not (string-empty-p path))
-                              (not (string= path "/")))
-                         path
-                       "/v1/chat/completions"))
+           (base     (if (and path (not (string-empty-p path)))
+                         (replace-regexp-in-string "/+\\'" "" path)
+                       ""))
+           (endpoint (cond
+                      ((string-suffix-p "/chat/completions" base) base)
+                      ((string-empty-p base) "/v1/chat/completions")
+                      (t (concat base "/chat/completions"))))
            (model-sym (intern model))
            (backend  (gptel-make-openai "Hermes"
                        :protocol scheme
