@@ -45,6 +45,7 @@ Sets ellama-provider from environment variables and opens an interactive chat:
   HERMES_AGENT_MODEL - model name
   HERMES_AGENT_TOKEN - API token (may be empty for unauthenticated agents)"
     (interactive)
+    (require 'llm-openai)
     (let* ((url      (or (getenv "HERMES_AGENT_URL")
                          (user-error "HERMES_AGENT_URL is not set")))
            (model    (or (getenv "HERMES_AGENT_MODEL")

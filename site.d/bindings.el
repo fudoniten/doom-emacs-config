@@ -276,7 +276,7 @@
        :desc "Open agent shell"     "a" #'agent-shell
        :desc "New agent shell"      "A" #'agent-shell-new-shell
        :desc "gptel"                "g" #'gptel
-       :desc "gptel menu"           "G" #'gptel-menu
+       :desc "gptel menu"           "G" (cmd! (gptel-menu))
        :desc "ellama chat"          "e" #'ellama-chat
        :desc "Hermes agent (gptel)"  "h" #'hermes-agent-connect
        :desc "Hermes agent (ellama)" "H" #'hermes-agent-connect-ellama
