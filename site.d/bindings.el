@@ -277,7 +277,8 @@
        :desc "New agent shell"      "A" #'agent-shell-new-shell
        :desc "gptel"                "g" #'gptel
        :desc "gptel menu"           "G" (cmd! (gptel-menu))
-       :desc "ellama chat"          "e" #'ellama-chat
+       :desc "ellama chat"          "e" #'my/ellama-chat
+       :desc "ellama setup Ollama"  "o" #'ellama-setup-ollama
        :desc "Hermes agent (gptel)"  "h" #'hermes-agent-connect
        :desc "Hermes agent (ellama)" "H" #'hermes-agent-connect-ellama
        (:prefix-map ("d" . "aidermacs")
