@@ -1,19 +1,61 @@
 ;;; site.d/hermes.el -*- lexical-binding: t; -*-
 
+(defcustom hermes-agent-url nil
+  "Base URL for the Hermes agent, e.g. \"http://localhost:8080\".
+Overridden by the HERMES_AGENT_URL environment variable if set."
+  :type '(choice (const nil) string)
+  :group 'hermes)
+
+(defcustom hermes-agent-model nil
+  "Model name to use with the Hermes agent.
+Overridden by the HERMES_AGENT_MODEL environment variable if set."
+  :type '(choice (const nil) string)
+  :group 'hermes)
+
+(defcustom hermes-agent-token ""
+  "API token for the Hermes agent. May be empty for unauthenticated agents.
+Overridden by the HERMES_AGENT_TOKEN environment variable if set."
+  :type 'string
+  :group 'hermes)
+
+(defcustom hermes-local-config-file
+  (expand-file-name "hermes.el" (or (getenv "XDG_DATA_HOME")
+                                    (expand-file-name ".local/share/doom" "~")))
+  "Path to a local Elisp file loaded at startup to configure Hermes variables.
+The file may contain plain `setq' calls for `hermes-agent-url',
+`hermes-agent-model', and `hermes-agent-token'."
+  :type 'file
+  :group 'hermes)
+
+(when (and hermes-local-config-file
+           (file-readable-p hermes-local-config-file))
+  (load hermes-local-config-file nil :nomessage))
+
+(defun hermes-agent--resolve (env-var custom-var label)
+  "Return the value for a Hermes config key, or signal an error.
+Tries ENV-VAR first, then CUSTOM-VAR; signals a user error using LABEL if
+neither is set."
+  (or (getenv env-var)
+      (and (stringp custom-var) (not (string-empty-p custom-var)) custom-var)
+      (user-error "Hermes: %s is not set (tried env var %s and `%s')"
+                  label env-var
+                  (symbol-name
+                   (pcase label
+                     ("URL"   'hermes-agent-url)
+                     ("model" 'hermes-agent-model)
+                     (_       'hermes-agent-token))))))
+
 (after! gptel
   (defun hermes-agent-connect ()
     "Open a gptel chat buffer connected to the local Hermes agent.
-Reads connection details from environment variables:
-  HERMES_AGENT_URL   - base URL, e.g. http://localhost:8080
-  HERMES_AGENT_MODEL - model name
-  HERMES_AGENT_TOKEN - API token (may be empty for unauthenticated agents)"
+Connection details are resolved in order: environment variable, then the
+corresponding `hermes-agent-*' custom variable.  The config file at
+`hermes-local-config-file' is loaded at startup and may set those variables."
     (interactive)
     (require 'url-parse)
-    (let* ((url      (or (getenv "HERMES_AGENT_URL")
-                         (user-error "HERMES_AGENT_URL is not set")))
-           (model    (or (getenv "HERMES_AGENT_MODEL")
-                         (user-error "HERMES_AGENT_MODEL is not set")))
-           (token    (or (getenv "HERMES_AGENT_TOKEN") ""))
+    (let* ((url      (hermes-agent--resolve "HERMES_AGENT_URL"   hermes-agent-url   "URL"))
+           (model    (hermes-agent--resolve "HERMES_AGENT_MODEL" hermes-agent-model "model"))
+           (token    (or (getenv "HERMES_AGENT_TOKEN") hermes-agent-token ""))
            (parsed   (url-generic-parse-url url))
            (scheme   (url-type parsed))
            (host     (url-host parsed))
@@ -40,17 +82,14 @@ Reads connection details from environment variables:
 (after! ellama
   (defun hermes-agent-connect-ellama ()
     "Open an ellama chat with the local Hermes agent.
-Sets ellama-provider from environment variables and opens an interactive chat:
-  HERMES_AGENT_URL   - base URL, e.g. http://localhost:8080/v1/
-  HERMES_AGENT_MODEL - model name
-  HERMES_AGENT_TOKEN - API token (may be empty for unauthenticated agents)"
+Connection details are resolved in order: environment variable, then the
+corresponding `hermes-agent-*' custom variable.  The config file at
+`hermes-local-config-file' is loaded at startup and may set those variables."
     (interactive)
     (require 'llm-openai)
-    (let* ((url      (or (getenv "HERMES_AGENT_URL")
-                         (user-error "HERMES_AGENT_URL is not set")))
-           (model    (or (getenv "HERMES_AGENT_MODEL")
-                         (user-error "HERMES_AGENT_MODEL is not set")))
-           (token    (or (getenv "HERMES_AGENT_TOKEN") ""))
+    (let* ((url      (hermes-agent--resolve "HERMES_AGENT_URL"   hermes-agent-url   "URL"))
+           (model    (hermes-agent--resolve "HERMES_AGENT_MODEL" hermes-agent-model "model"))
+           (token    (or (getenv "HERMES_AGENT_TOKEN") hermes-agent-token ""))
            (base-url (if (string-suffix-p "/" url) url (concat url "/"))))
       (setq ellama-provider
             (make-llm-openai-compatible
