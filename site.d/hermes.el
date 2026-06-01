@@ -19,8 +19,8 @@ Overridden by the HERMES_AGENT_TOKEN environment variable if set."
   :group 'hermes)
 
 (defcustom hermes-local-config-file
-  (expand-file-name "hermes.el" (or (getenv "XDG_DATA_HOME")
-                                    (expand-file-name ".local/share/doom" "~")))
+  (expand-file-name "doom/hermes.el" (or (getenv "XDG_DATA_HOME")
+                                         (expand-file-name ".local/share" "~")))
   "Path to a local Elisp file loaded at startup to configure Hermes variables.
 The file may contain plain `setq' calls for `hermes-agent-url',
 `hermes-agent-model', and `hermes-agent-token'."
