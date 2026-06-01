@@ -2,18 +2,26 @@
 
 (defun ellama-setup--parse-ollama-endpoint (input)
   "Return a plist (:scheme :host :port) for an Ollama endpoint INPUT.
-INPUT may be a bare hostname (\"localhost\", \"192.168.1.10\") or a
-full URL (\"http://host:11434\", \"https://ollama.example.com\")."
+INPUT may be a bare hostname (\"ollama.example.com\"), a host:port
+pair (\"localhost:11434\"), or a full URL (\"https://host\",
+\"http://host:11434\").  When no port is given, defaults to 443 —
+suitable for ingress/virtual-host setups; specify a port explicitly
+to override."
   (require 'url-parse)
-  (let* ((looks-like-url (string-match-p "://" input))
-         (parsed (url-generic-parse-url
-                  (if looks-like-url input (concat "http://" input))))
-         (scheme (or (url-type parsed) "http"))
-         (host   (url-host parsed))
-         (port   (let ((p (url-port parsed)))
-                   ;; url-port returns the scheme default when not specified.
-                   (cond ((and looks-like-url p (> p 0)) p)
-                         (t 11434)))))
+  (let* ((has-scheme   (string-match-p "://" input))
+         (with-scheme  (if has-scheme input (concat "http://" input)))
+         (parsed       (url-generic-parse-url with-scheme))
+         (scheme       (or (url-type parsed) "http"))
+         ;; Detect an explicit port in the user's input (either
+         ;; "host:port" or "scheme://host:port").  `url-port' falls back
+         ;; to the scheme default, which we can't distinguish from an
+         ;; explicit match.
+         (host+rest    (if has-scheme
+                           (substring input (+ (match-beginning 0) 3))
+                         input))
+         (explicit?    (string-match-p ":[0-9]+\\(/\\|\\'\\)" host+rest))
+         (host         (url-host parsed))
+         (port         (if explicit? (url-port parsed) 443)))
     (list :scheme scheme :host host :port port)))
 
 (defun ellama-setup--fetch-ollama-models (endpoint)
