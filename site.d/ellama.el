@@ -40,9 +40,10 @@ returns unexpected data."
               (re-search-forward "^$" nil t)
               (let* ((json-object-type 'alist)
                      (json-array-type  'list)
-                     (data   (json-read))
-                     (models (alist-get 'models data)))
-                (mapcar (lambda (m) (alist-get 'name m)) models)))
+                     (data (json-read)))
+                (when (listp data)
+                  (mapcar (lambda (m) (alist-get 'name m))
+                          (alist-get 'models data)))))
           (when (buffer-live-p buf) (kill-buffer buf))))
     (error
      (message "ellama: could not reach Ollama at %s:%d (%s)"
@@ -57,14 +58,14 @@ If `ellama-provider' is not configured, signals a user-error with
 setup instructions rather than attempting a connection and failing
 with a cryptic curl error.
 
-To chat with a local Ollama instance, run `M-x ellama-setup-ollama'.
+To chat with an Ollama instance, run `M-x ellama-setup-ollama'.
 For other providers, set `ellama-provider' in your config:
   https://github.com/s-kostyaev/ellama#configuration"
   (interactive)
   (unless (bound-and-true-p ellama-provider)
     (user-error
      (concat "ellama provider not configured.  "
-             "Run `M-x ellama-setup-ollama' for a local Ollama instance, "
+             "Run `M-x ellama-setup-ollama' to connect to an Ollama instance, "
              "or set `ellama-provider' in your config — "
              "see https://github.com/s-kostyaev/ellama#configuration")))
   ;; `ellama-chat' references `ellama-context-format', defined in
