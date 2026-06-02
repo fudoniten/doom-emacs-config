@@ -1,5 +1,7 @@
 ;;; site.d/ellama.el -*- lexical-binding: t; -*-
 
+(setq llm-warn-on-nonfree nil)
+
 (defun ellama-setup--parse-ollama-endpoint (input)
   "Return a plist (:scheme :host :port) for an Ollama endpoint INPUT.
 INPUT may be a bare hostname (\"ollama.example.com\"), a host:port
