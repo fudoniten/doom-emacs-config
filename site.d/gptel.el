@@ -12,7 +12,6 @@
           :endpoint "/api/v1/chat/completions"
           :key      (lambda ()
                       (or (getenv "OPENROUTER_API_KEY")
-                          (getenv "HERMES_AGENT_TOKEN")
                           (user-error
                            (concat "No OpenRouter API key found.  "
                                    "Set OPENROUTER_API_KEY in your environment."))))
