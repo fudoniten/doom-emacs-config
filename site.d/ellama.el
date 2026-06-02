@@ -1,27 +1,26 @@
 ;;; site.d/ellama.el -*- lexical-binding: t; -*-
 
+(setq llm-warn-on-nonfree nil)
+
 (defun ellama-setup--parse-ollama-endpoint (input)
   "Return a plist (:scheme :host :port) for an Ollama endpoint INPUT.
 INPUT may be a bare hostname (\"ollama.example.com\"), a host:port
 pair (\"localhost:11434\"), or a full URL (\"https://host\",
-\"http://host:11434\").  When no port is given, defaults to 443 —
-suitable for ingress/virtual-host setups; specify a port explicitly
-to override."
+\"http://host:11434\").  When no port is given, defaults to 443.
+When port is 443 and no explicit scheme is given, defaults to https."
   (require 'url-parse)
   (let* ((has-scheme   (string-match-p "://" input))
          (with-scheme  (if has-scheme input (concat "http://" input)))
          (parsed       (url-generic-parse-url with-scheme))
-         (scheme       (or (url-type parsed) "http"))
-         ;; Detect an explicit port in the user's input (either
-         ;; "host:port" or "scheme://host:port").  `url-port' falls back
-         ;; to the scheme default, which we can't distinguish from an
-         ;; explicit match.
          (host+rest    (if has-scheme
                            (substring input (+ (match-beginning 0) 3))
                          input))
          (explicit?    (string-match-p ":[0-9]+\\(/\\|\\'\\)" host+rest))
          (host         (url-host parsed))
-         (port         (if explicit? (url-port parsed) 443)))
+         (port         (if explicit? (url-port parsed) 443))
+         ;; Infer https for port 443 when the user didn't say otherwise.
+         (scheme       (or (and has-scheme (url-type parsed))
+                           (if (= port 443) "https" "http"))))
     (list :scheme scheme :host host :port port)))
 
 (defun ellama-setup--fetch-ollama-models (endpoint)
@@ -81,7 +80,7 @@ mistral, codellama).  Sets `ellama-provider' for the current
 session; to persist across restarts, add the equivalent `setq' to
 your personal config."
   (interactive
-   (let* ((input    (read-string "Ollama host or URL: " "localhost"))
+   (let* ((input    (read-string "Ollama host or URL: " "localhost:11434"))
           (endpoint (ellama-setup--parse-ollama-endpoint input))
           (models   (ellama-setup--fetch-ollama-models endpoint))
           (model    (if models
@@ -89,17 +88,17 @@ your personal config."
                       (read-string "Ollama model (could not query host): "
                                    "llama3.2"))))
      (list endpoint model)))
-  (require 'llm-ollama)
-  (when (equal (plist-get endpoint :scheme) "https")
-    (message "ellama: llm-ollama only supports http; ignoring https scheme"))
-  (setq ellama-provider
-        (make-llm-ollama :host       (plist-get endpoint :host)
-                         :port       (plist-get endpoint :port)
-                         :chat-model model))
-  (message "ellama: using Ollama model %S at %s:%d"
-           model
-           (plist-get endpoint :host)
-           (plist-get endpoint :port))
+  ;; Use the OpenAI-compatible endpoint (/v1/chat/completions) rather than
+  ;; the native Ollama API (/api/chat).  This works with all modern Ollama
+  ;; deployments, supports HTTPS, and is the same path used by Hermes.
+  (require 'llm-openai)
+  (let ((base-url (format "%s://%s:%d/v1/"
+                          (plist-get endpoint :scheme)
+                          (plist-get endpoint :host)
+                          (plist-get endpoint :port))))
+    (setq ellama-provider
+          (make-llm-openai-compatible :url base-url :key "" :chat-model model))
+    (message "ellama: using Ollama model %S at %s" model base-url))
   (require 'ellama-context)
   (call-interactively #'ellama-chat))
 
