@@ -19,8 +19,8 @@ Overridden by the HERMES_AGENT_TOKEN environment variable if set."
   :group 'hermes)
 
 (defcustom hermes-local-config-file
-  (expand-file-name "hermes.el" (or (getenv "XDG_DATA_HOME")
-                                    (expand-file-name ".local/share/doom" "~")))
+  (expand-file-name "doom/hermes.el" (or (getenv "XDG_DATA_HOME")
+                                         (expand-file-name ".local/share" "~")))
   "Path to a local Elisp file loaded at startup to configure Hermes variables.
 The file may contain plain `setq' calls for `hermes-agent-url',
 `hermes-agent-model', and `hermes-agent-token'."
@@ -61,23 +61,31 @@ corresponding `hermes-agent-*' custom variable.  The config file at
            (host     (url-host parsed))
            (port     (url-port parsed))
            (path     (url-filename parsed))
-           (hostport (if (and port (> port 0))
+           (hostport (if (and port (numberp port) (> port 0))
                          (format "%s:%d" host port)
                        host))
-           (endpoint (if (and path
-                              (not (string-empty-p path))
-                              (not (string= path "/")))
-                         path
-                       "/v1/chat/completions"))
+           (base     (if (and path (not (string-empty-p path)))
+                         (replace-regexp-in-string "/+\\'" "" path)
+                       ""))
+           (endpoint (cond
+                      ((string-suffix-p "/chat/completions" base) base)
+                      ((string-empty-p base) "/v1/chat/completions")
+                      (t (concat base "/chat/completions"))))
+           (model-sym (intern model))
            (backend  (gptel-make-openai "Hermes"
                        :protocol scheme
                        :host     hostport
                        :endpoint endpoint
-                       :key      token
-                       :models   (list (intern model)))))
-      (let ((gptel-backend backend)
-            (gptel-model   (intern model)))
-        (gptel "*Hermes*")))))
+                       :key      (lambda () token)
+                       :models   (list model-sym)))
+           (buf (gptel "*Hermes*")))
+      ;; gptel sets `gptel-backend' / `gptel-model' buffer-locally from the
+      ;; global values during mode init; dynamic `let' bindings don't survive
+      ;; that, so explicitly assign them in the new buffer.
+      (with-current-buffer buf
+        (setq-local gptel-backend backend
+                    gptel-model   model-sym))
+      (pop-to-buffer buf))))
 
 (after! ellama
   (defun hermes-agent-connect-ellama ()
@@ -87,6 +95,9 @@ corresponding `hermes-agent-*' custom variable.  The config file at
 `hermes-local-config-file' is loaded at startup and may set those variables."
     (interactive)
     (require 'llm-openai)
+    ;; `ellama-chat' references `ellama-context-format', defined in
+    ;; ellama-context.el and not autoloaded.
+    (require 'ellama-context)
     (let* ((url      (hermes-agent--resolve "HERMES_AGENT_URL"   hermes-agent-url   "URL"))
            (model    (hermes-agent--resolve "HERMES_AGENT_MODEL" hermes-agent-model "model"))
            (token    (or (getenv "HERMES_AGENT_TOKEN") hermes-agent-token ""))

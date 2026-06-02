@@ -273,18 +273,24 @@
 
 ;;; <leader> a --- AI
       (:prefix-map ("a" . "AI")
-       :desc "Open agent shell"     "a" #'agent-shell
-       :desc "New agent shell"      "A" #'agent-shell-new-shell
-       :desc "gptel"                "g" #'gptel
-       :desc "gptel menu"           "G" (cmd! (gptel-menu))
-       :desc "ellama chat"          "e" #'my/ellama-chat
-       :desc "ellama setup Ollama"  "o" #'ellama-setup-ollama
-       :desc "Hermes agent (gptel)"  "h" #'hermes-agent-connect
-       :desc "Hermes agent (ellama)" "H" #'hermes-agent-connect-ellama
+       :desc "Open agent shell"          "a" #'agent-shell
+       :desc "New agent shell"           "A" #'agent-shell-new-shell
+       :desc "gptel chat"                "c" #'gptel
+       (:prefix-map ("g" . "gptel")
+        :desc "Open chat"                "g" #'gptel
+        :desc "Menu (transient)"         "m" (cmd! (require 'gptel-transient)
+                                                   (call-interactively #'gptel-menu))
+        :desc "Send region/buffer"       "s" #'gptel-send)
+       (:prefix-map ("e" . "ellama")
+        :desc "Chat"                     "e" #'my/ellama-chat
+        :desc "Setup Ollama"             "o" #'ellama-setup-ollama)
+       (:prefix-map ("h" . "hermes")
+        :desc "Connect (gptel)"          "h" #'hermes-agent-connect
+        :desc "Connect (ellama)"         "e" #'hermes-agent-connect-ellama)
        (:prefix-map ("d" . "aidermacs")
-        :desc "Aidermacs menu"      "d" #'aidermacs-transient-menu
-        :desc "Add file"            "f" #'aidermacs-add-current-file
-        :desc "Drop file"           "F" #'aidermacs-drop-current-file))
+        :desc "Aidermacs menu"           "d" #'aidermacs-transient-menu
+        :desc "Add file"                 "f" #'aidermacs-add-current-file
+        :desc "Drop file"                "F" #'aidermacs-drop-current-file))
 
 ;;; <leader> & --- snippets
       (:prefix-map ("&" . "snippets")
