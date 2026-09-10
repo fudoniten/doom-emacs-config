@@ -74,6 +74,8 @@
 (maybe-package! eshell-syntax-highlighting)
 (maybe-package! capf-autosuggest)
 
+(maybe-package! qml-mode)
+
 ;; Personal/local packages — add :recipe (:host github :repo "...") when publishing
 ;; (maybe-package! polymuse)
 ;; (maybe-package! canon)
