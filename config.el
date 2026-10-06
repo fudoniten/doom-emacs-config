@@ -278,9 +278,12 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
             (setenv "EDITOR" "emacsclient")))
 
 ;; System Specific Settings
-(when (eq system-type 'darwin)
-  (setq mac-option-modifier 'meta)
-  (setq mac-command-modifier 'meta))
+;; Set the ns-* variables directly. The mac-* names are aliases that
+;; term/ns-win.el only creates when the first GUI frame opens; in a daemon
+;; that happens after this runs, and the aliasing discards the value.
+(when (boundp 'ns-command-modifier)
+  (setq ns-command-modifier 'meta
+        ns-alternate-modifier 'meta))
 
 (when (or (eq window-system 'x)
           (eq window-system 'darwin))
