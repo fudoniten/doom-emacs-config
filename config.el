@@ -327,9 +327,13 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 
 (defun load-all-configurations ()
   "Load configuration directories from various system and user-defined paths."
-  (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR" "XDG_CONFIG_HOME"))
+  (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR"))
+         ;; macOS doesn't set XDG_CONFIG_HOME, but home-manager still
+         ;; writes to ~/.config, so fall back to the spec's default.
+         (xdg-config-home (or (getenv "XDG_CONFIG_HOME") (expand-file-name "~/.config")))
          (system-bases (filter-existing-dirs
                         (append (mapcar #'getenv-or-empty xdg-vars)
+                                (list xdg-config-home)
                                 (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
          (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
          (system-conf-dirs (cross-product-dirs system-bases system-subs))
