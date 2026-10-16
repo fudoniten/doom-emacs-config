@@ -287,6 +287,9 @@
        (:prefix-map ("h" . "hermes")
         :desc "Connect (gptel)"          "h" #'hermes-agent-connect
         :desc "Connect (ellama)"         "e" #'hermes-agent-connect-ellama)
+       (:prefix-map ("k" . "kirocrew")
+        :desc "Connect (gptel)"          "k" #'kirocrew-agent-connect
+        :desc "Connect (ellama)"         "e" #'kirocrew-agent-connect-ellama)
        (:prefix-map ("d" . "aidermacs")
         :desc "Aidermacs menu"           "d" #'aidermacs-transient-menu
         :desc "Add file"                 "f" #'aidermacs-add-current-file
