@@ -22,9 +22,19 @@
 ;;      home for the token.  It lives under $XDG_DATA_HOME/doom/, OUTSIDE
 ;;      this (version-controlled) repo, so a secret never lands in git.
 
-(defcustom kirocrew-agent-url "http://localhost:5476"
-  "Base URL for the local Kiro Crew gateway.
+(defcustom kirocrew-agent-url "http://localhost:5477"
+  "Base URL for the Kiro Crew LOCAL REFRESH PROXY.
 The OpenAI-compatible endpoint is <url>/v1/chat/completions.
+
+This points at the loopback refresh proxy (default port 5477), NOT the
+gateway directly (5476).  The gateway's auth is browser-shaped: it reads
+the credential from a `?token=' query param or the `mc_token_<port>'
+cookie (never an Authorization: Bearer header), and `kirocrew token'
+mints only a 5-minute link token, not a durable API key.  The proxy
+holds a real session, auto-rotates it via POST /api/auth/refresh, and
+re-exposes a stable, unauthenticated, loopback-only OpenAI endpoint.
+See ~/.config/kirocrew-proxy/proxy.py.
+
 Overridden by the KIROCREW_AGENT_URL environment variable if set."
   :type 'string
   :group 'kirocrew)
@@ -38,8 +48,12 @@ Overridden by the KIROCREW_AGENT_MODEL environment variable if set."
   :group 'kirocrew)
 
 (defcustom kirocrew-agent-token ""
-  "Dashboard bearer token for the Kiro Crew gateway.
-Required on every request.  Mint one with `kirocrew token' in a shell.
+  "Dashboard token for the Kiro Crew gateway.  OPTIONAL with the proxy.
+When `kirocrew-agent-url' points at the local refresh proxy (the
+default), NO token is needed -- the proxy holds and rotates the real
+session itself, and this value is ignored.  Only set it if you repoint
+the URL straight at the gateway, in which case it must be a currently
+valid session token (not a 5-minute `kirocrew token' link token).
 Overridden by the KIROCREW_AGENT_TOKEN environment variable if set.
 
 Do NOT commit a real token: prefer the environment variable or
@@ -83,13 +97,12 @@ a doomed connection and point the user at `kirocrew token' instead."
   (let ((tok (or (getenv "KIROCREW_AGENT_TOKEN")
                  (and (stringp kirocrew-agent-token) kirocrew-agent-token)
                  "")))
-    (if (string-empty-p tok)
-        (user-error
-         (concat "Kiro Crew: no token.  Mint one with `kirocrew token' in a "
-                 "shell, then set KIROCREW_AGENT_TOKEN or `kirocrew-agent-token' "
-                 "(e.g. in %s)")
-         kirocrew-local-config-file)
-      tok)))
+    ;; The local refresh proxy (the default target) is UNAUTHENTICATED on
+    ;; loopback and ignores whatever key gptel sends, so an empty token is
+    ;; fine -- return a harmless placeholder to satisfy gptel's `:key'
+    ;; contract.  A real token only matters if `kirocrew-agent-url' is
+    ;; repointed straight at the gateway via `?token=' (not the default).
+    (if (string-empty-p tok) "unused-local-proxy" tok)))
 
 (defun kirocrew-agent--endpoint (url)
   "Return the chat-completions endpoint path for base URL.
