@@ -10,13 +10,17 @@
 
 ;; To install SOME-PACKAGE from MELPA, ELPA or emacsmirror:
 ;; (package! some-package)
+;;
+;; Most packages here are also installed by Nix (fudo-nix-home's
+;; `defaultEmacsPkgs'); `maybe-package!' skips them when they're already on
+;; `load-path'.  Don't redeclare packages that an enabled Doom module in
+;; init.el already installs (e.g. paredit, eglot, nix-mode, org-roam,
+;; org-modern, bash-completion) -- an unpinned `package!' overrides Doom's pin.
 
 (defmacro maybe-package! (pkg &rest args)
   "Call `package!' for PKG only if it's not already in the load path."
   `(unless (locate-library ,(symbol-name pkg))
      (package! ,pkg ,@args)))
-
-;; Basic Emacs functionality
 
 ;; Communication Packages
 (maybe-package! ellama)
@@ -24,38 +28,21 @@
 (maybe-package! agent-shell)
 (maybe-package! restclient)
 
-;; Org and Note-taking
-(maybe-package! org-roam)
-
-;; Transient
-(maybe-package! transient)
-
 ;; Development Tools
 (maybe-package! aidermacs)
 (maybe-package! edit-server)
-(maybe-package! eglot)
 (maybe-package! gptel :recipe (:nonrecursive t))
 (maybe-package! kubernetes)
-(maybe-package! nix-mode)
-(maybe-package! paredit)
 
 (maybe-package! doom-two-tone-themes
                 :recipe (:host github
                          :repo "eliraz-refael/doom-two-tone-themes"
                          :files ("doom-two-tone-themes.el" "themes/*.el")))
 
-(maybe-package! bash-completion)
-
-;; Nix
-(maybe-package! nix-ts-mode)
-
 ;; VCS / Git
 (maybe-package! diff-hl)
 (maybe-package! magit-delta)
 (maybe-package! git-link)
-
-;; Org
-(maybe-package! org-modern)
 
 ;; Tree-sitter
 (maybe-package! treesit-auto)
@@ -71,8 +58,10 @@
 (maybe-package! pet)
 
 ;; Eshell
-(maybe-package! eshell-syntax-highlighting)
 (maybe-package! capf-autosuggest)
+
+;; Avy dispatch menus (site.d/avy.el); the :ui hydra module is off
+(maybe-package! hydra)
 
 (maybe-package! qml-mode)
 

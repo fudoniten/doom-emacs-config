@@ -1,8 +1,9 @@
 ;;; $DOOMDIR/config.el -*- lexical-binding: t; -*-
 ;; Keywords: configuration, emacs, doom emacs, user settings, environment, hooks
 
-;; Place your private configuration here! Remember, you do not need to run 'doom
-;; sync' after modifying this file!
+;; Global settings only.  Feature- and language-specific configuration lives
+;; in site.d/*.el, which is loaded (alphabetically) at the end of this file.
+;; Remember, you do not need to run 'doom sync' after modifying this file!
 
 ;; User Information
 (setq user-full-name "Niten"
@@ -83,14 +84,11 @@
 ;; they are implemented.
 
 ;; Packages
-
-(use-package elpher)
-(use-package agent-shell)
-(use-package restclient)
-
-(use-package org-roam)
-
-(use-package transient)
+;;
+;; Packages are autoloaded on first use; only load eagerly what something
+;; else depends on at startup.  ellama is loaded now because hermes.el and
+;; kirocrew.el define their ellama commands inside `(after! ellama ...)'.
+(use-package ellama)
 
 ;; consult--customize-put calls (message ...) rather than (error ...) when it
 ;; receives a symbol that is neither a command nor a properly-formed source
@@ -116,37 +114,10 @@
    :preview-key "C-SPC"))
 
 (use-package aidermacs
-  :ensure t
   :after transient)
-(use-package edit-server)
-(use-package eglot)
-(use-package nix-mode)
-(use-package kubernetes)
-(use-package gptel)
-(use-package ellama)
 (use-package polymuse :if (locate-library "polymuse"))
 (use-package canon   :if (locate-library "canon"))
-;;;; Broken?
-;; (use-package graphviz-dot-mode)
 
-(use-package paredit
-  :ensure nil
-  :commands (paredit-mode)
-  :hook ((clojure-mode . paredit-mode)
-         (cider-repl-mode . paredit-mode))
-  :config (map! :map paredit-mode-map
-                "M-(" #'paredit-wrap-round
-                "M-)" #'paredit-close-round))
-
-(use-package bash-completion
-  :commands bash-completion-dynamic-complete
-  :hook ((shell-dynamic-complete-functions . bash-completion-dynamic-complete)
-         (eshell-mode . my/eshell-mode-completion-hook))
-  :config (defun my/eshell-mode-completion-hook ()
-            (add-hook 'completion-at-point-functions
-                      'bash-completion-capf-nonexclusive nil t)))
-
-(require 'cl-lib)
 (load! "site-functions.el")
 (setq-default tab-width 2)
 (setq inferior-lisp-program "sbcl")
@@ -156,13 +127,11 @@
 (setq diff-switches "-u")
 (setq tab-always-indent t)
 
-;; Eglot and Nix
-(when (and (locate-library "eglot") (locate-library "nix-mode"))
-  (after! eglot
-    (add-to-list 'eglot-server-programs '(nix-mode . ("nil")))
-    (add-hook 'nix-mode-hook 'eglot-ensure)))
-
 ;; TLS Advice
+;; Declare it special so the `let' below binds it dynamically even if gnutls
+;; hasn't been loaded yet (this file uses lexical-binding).
+(defvar gnutls-verify-error)
+
 (defun tls-nocheck-error-advice (orig-fun &rest args)
   "Advise a function (with :around) not to check TLS errors.
 
@@ -176,106 +145,9 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 (after! elpher
   (advice-add 'elpher-get-gemini-response :around 'tls-nocheck-error-advice))
 
-;;;;
-;; TRAMP
-;;;;
-;;
-;; per: https://coredumped.dev/2025/06/18/making-tramp-go-brrrr./
-
-(setq remote-file-name-inhibit-locks t
-      tramp-use-scp-direct-remote-copying t
-      remote-file-name-inhibit-auto-save-visited t
-      tramp-copy-size-limit (* 1024 1024 2)
-      tramp-verbose 2)
-
-(connection-local-set-profile-variables
- 'remote-direct-async-process
- '((tramp-direct-async-process . t)))
-
-(connection-local-set-profiles
- '(:application tramp :machine "server")
- 'remote-direct-async-process)
-
-(setq magit-tramp-pipe-stty-settings 'pty)
-
-(with-eval-after-load 'tramp
-  (with-eval-after-load 'compile
-    (remove-hook 'compilation-mode-hook #'tramp-compile-disable-ssh-controlmaster-options)))
-
-(defun $magit-auto-revert-not-remote (orig-fun &rest args)
-  (unless (and buffer-file-name (file-remote-p buffer-file-name))
-    (apply orig-fun args)))
-
-(advice-add 'magit-turn-on-auto-revert-mode-if-desired
-            :around
-            #'$magit-auto-revert-not-remote)
-
-(setq magit-branch-direct-configure nil
-      magit-refresh-status-buffer nil)
-
-(defun memoize-remote (key cache orig-fn &rest args)
-  "Memoize a value if the key is a remote path."
-  (if (and key
-           (file-remote-p key))
-      (if-let ((current (assoc key (symbol-value cache))))
-          (cdr current)
-        (let ((current (apply orig-fn args)))
-          (set cache (cons (cons key current) (symbol-value cache)))
-          current))
-    (apply orig-fn args)))
-
-;; Memoize magit top level
-(defvar magit-toplevel-cache nil)
-(defun memoize-magit-toplevel (orig &optional directory)
-  (memoize-remote (or directory default-directory)
-                  'magit-toplevel-cache orig directory))
-(advice-add 'magit-toplevel :around #'memoize-magit-toplevel)
-
-;; memoize vc-git-root
-(defvar vc-git-root-cache nil)
-(defun memoize-vc-git-root (orig file)
-  (let ((value (memoize-remote (file-name-directory file) 'vc-git-root-cache orig file)))
-    ;; sometimes vc-git-root returns nil even when there is a root there
-    (when (null (cdr (car vc-git-root-cache)))
-      (setq vc-git-root-cache (cdr vc-git-root-cache)))
-    value))
-(advice-add 'vc-git-root :around #'memoize-vc-git-root)
-
-
-;;;;
-;; Functions
-;;;;
-(defun get-bash-path ()
-  "Return paths from the bash PATH."
-  (let* ((bash-path (bash-env-var "PATH"))
-         (path-dirs (split-string bash-path ":")))
-    (filter #'file-directory-p path-dirs)))
-
-(defun load-configuration-directories (dirs)
-  "Load all configuration files from the given list of `DIRS'."
-  (dolist (dir dirs)
-    (if (and (stringp dir) (file-directory-p dir))
-        (let ((configs (filter (lambda (name)
-                                 (not (or (string-match "~$" name)
-                                          (string-match "^[.]" name))))
-                               (directory-files dir))))
-          (dolist (file configs)
-            (let ((full-file (expand-file-name file dir)))
-              (if (or (file-regular-p full-file) (file-symlink-p full-file))
-                  (progn (message "Loading file %s" full-file)
-                         (condition-case err
-                             (load full-file)
-                           (error (message "Error loading file %s: %s" full-file err))))
-                (message "Skipping invalid file %s" full-file)))))
-      (message "skipping invalid or nonexistent directory: %s" dir))))
-
 ;; Hooks
 (add-hook 'after-init-hook 'load-persistent-scratch)
 (add-hook 'kill-emacs-hook 'save-persistent-scratch)
-(add-hook 'eshell-mode-hook
-          (lambda ()
-            (setenv "PAGER" "cat")
-            (setenv "EDITOR" "emacsclient")))
 
 ;; System Specific Settings
 ;; Set the ns-* variables directly. The mac-* names are aliases that
@@ -285,6 +157,9 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
   (setq ns-command-modifier 'meta
         ns-alternate-modifier 'meta))
 
+;; FIXME: never runs -- `window-system' is never `darwin' (that's
+;; `system-type'), and the function is `edit-server-start', not
+;; `edit-start-server' (and it's a function, so `boundp' is always nil).
 (when (or (eq window-system 'x)
           (eq window-system 'darwin))
   (when (boundp 'edit-start-server)
@@ -295,22 +170,14 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
 (global-subword-mode 1)
 
 ;; Scratch Buffer
-(advice-add 'kill-buffer :around
-  (lambda (orig-fun &rest args)
-    "Bury the *scratch* buffer, but never kill it."
-    (let* ((buf (or (car args) (current-buffer)))
-           (buf-name (if (bufferp buf) (buffer-name buf) buf)))
-      (if (equal buf-name "*scratch*")
-          (bury-buffer)
-        (apply orig-fun args)))))
-
+;; Doom already refuses to kill *scratch* (`doom-protect-fallback-buffer-h').
+;; This keeps its contents across restarts.
 (defvar *persistent-scratch-location*
   (expand-file-name "emacs/persistent-scratch.el"
                     (or (getenv "XDG_STATE_HOME") "~/.local/state")))
 
 (defun save-persistent-scratch ()
-  "Write the contents of *scratch* to the file name
-`persistent-scratch-file-name'."
+  "Write the contents of *scratch* to `*persistent-scratch-location*'."
   (with-current-buffer (get-buffer-create "*scratch*")
     (let ((scratch-directory (file-name-directory *persistent-scratch-location*)))
       (when (not (file-directory-p scratch-directory))
@@ -318,30 +185,14 @@ Usage: (advice-add 'my-function-for-advisement :around 'tls-nocheck-error-advice
     (write-region (point-min) (point-max) *persistent-scratch-location*)))
 
 (defun load-persistent-scratch ()
-  "Load the contents of `persistent-scratch-file-name' into the
-  scratch buffer, clearing its contents first."
+  "Load `*persistent-scratch-location*' into *scratch*, replacing its contents."
   (when (file-exists-p *persistent-scratch-location*)
-    (with-current-buffer (get-buffer "*scratch*")
+    (with-current-buffer (get-buffer-create "*scratch*")
       (delete-region (point-min) (point-max))
       (insert-file-contents *persistent-scratch-location*))))
 
-(defun load-all-configurations ()
-  "Load configuration directories from various system and user-defined paths."
-  (let* ((xdg-vars '("XDG_STATE_HOME" "XDG_DATA_HOME" "XDG_RUNTIME_DIR"))
-         ;; macOS doesn't set XDG_CONFIG_HOME, but home-manager still
-         ;; writes to ~/.config, so fall back to the spec's default.
-         (xdg-config-home (or (getenv "XDG_CONFIG_HOME") (expand-file-name "~/.config")))
-         (system-bases (filter-existing-dirs
-                        (append (mapcar #'getenv-or-empty xdg-vars)
-                                (list xdg-config-home)
-                                (split-string (getenv-or-empty "XDG_CONFIG_DIRS")))))
-         (system-subs '("emacs.d" "site-emacs.d" "local-emacs.d" "doom.d"))
-         (system-conf-dirs (cross-product-dirs system-bases system-subs))
-         (site-config (expand-file-name "site.d" (file-name-directory (or load-file-name buffer-file-name))))
-         (conf-dirs (append system-conf-dirs (list site-config))))
-    (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
-    (load-configuration-directories conf-dirs)))
-
+;; Load machine-local config dirs, then this repo's site.d/ (see
+;; site-functions.el).  Keep this last.
 (load-all-configurations)
 
 (provide 'config)

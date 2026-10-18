@@ -8,9 +8,6 @@
   (dolist (hook '(clojure-mode-hook clojurescript-mode-hook clojurec-mode-hook))
     (add-hook hook (lambda () (smartparens-mode -1)))))
 
-;; Ensure paredit in ClojureC too (clojurec-mode-hook was missing from lisp.el)
-(add-hook 'clojurec-mode-hook #'paredit-mode)
-
 ;; CIDER jack-in
 (after! cider
   (map! :leader

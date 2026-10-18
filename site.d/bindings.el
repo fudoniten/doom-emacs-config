@@ -2,9 +2,9 @@
 
 ;;; Code:
 
-;; Sensible default key bindings for non-evil users
-(setq doom-leader-alt-key "C-c"
-      doom-localleader-alt-key "C-c l")
+;; This started as a copy of Doom's modules/config/default/+emacs-bindings.el
+;; (which `(default +bindings)' in init.el already loads, and which sets the
+;; C-c / C-c l leader keys).  Only the deltas from Doom's version matter.
 
 ;;; Autoloads
 (autoload 'org-capture-goto-target "org-capture" nil t)
@@ -618,12 +618,12 @@
       "C-M-p"   #'mc/mark-previous-like-this
       "C-c d"   #'duplicate-line
       "C-c t"   #'toggle-comment-on-line
-      "C-c o"   #'open-line-below
-      "C-c O"   #'open-line-above
-      "C-c r"   #'rename-file-and-buffer
-      "C-c m"   #'move-buffer-file
+      "C-c o"   #'open-and-indent-line
+      "C-c O"   #'open-and-indent-previous-line
+      "C-c r"   #'rename-visited-file
+      "C-c m"   #'doom/move-this-file
       "C-c u"   #'untabify-this-file
-      "C-c y"   #'yank-buffer-path
+      "C-c y"   #'+default/yank-buffer-path
       "C-c c"   #'copy-line
       "C-c w"   #'copy-word
       "C-c n"   #'open-and-indent-line
@@ -634,7 +634,6 @@
       "M-<up>"  #'move-text-up
       "M-<down>" #'move-text-down
       "C-c %"   #'goto-match-paren
-      "C-x b"   #'consult-buffer
       "C-M-SPC" #'mark-whole-sexp
       [C-M-backspace] #'backward-kill-sexp)
 
@@ -652,15 +651,7 @@
   (lambda ()
     (define-key global-map (kbd "C-x C-m") #'execute-extended-command)))
 
-(map! :map paredit-mode-map
-      "C-c }" #'paredit-forward-barf-sexp
-      "C-c {" #'paredit-backward-barf-sexp
-      "C-}"  #'paredit-forward-barf-sexp
-      "C-{"  #'paredit-backward-barf-sexp
-      "C-c )" #'paredit-forward-slurp-sexp
-      "C-c (" #'paredit-backward-slurp-sexp
-      "C-)"  #'paredit-forward-slurp-sexp
-      "C-("  #'paredit-backward-slurp-sexp)
+;; Paredit bindings live in lisp.el.
 
 (provide 'bindings)
 ;;; bindings.el ends here
