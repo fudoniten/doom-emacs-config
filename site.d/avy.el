@@ -12,6 +12,9 @@
 ;; Start any avy jump (e.g. `C-.' / `C-c .' = `avy-goto-char-timer').  When
 ;; the candidate labels appear, press a verb key, then the candidate's label;
 ;; a hydra then asks for the noun -- the thing at the target to act on.
+;; While the labels are up, a menu at the bottom lists the verbs; set
+;; `fudo-avy-verb-menu' to a number of seconds to only show it when you
+;; hesitate, or to nil once you know them.
 ;;
 ;;   C-. e  K f  w     kill the word under candidate "f"
 ;;   C-. (  y d  b     copy the (...) list under "d" to point
@@ -32,22 +35,23 @@
 
 (eval-and-compile
   (defconst fudo--avy-verbs
-    '((?K kill       "kill it; stay where you were")
-      (?C copy       "copy it")
-      (?y yank       "copy it to point")
-      (?m move       "move it to point")
-      (?p replace    "replace it with the latest kill")
-      (?E change     "kill it and go there to type (vi c)")
-      (?S swap       "swap it with the same thing at point")
-      (?r mark       "go there and mark it")
-      (?* mark-all   "multiple cursors on every occurrence")
-      (?c comment    "comment/uncomment it")
-      (?= indent     "reindent it")
-      (?U upcase     "upcase it")
-      (?L downcase   "downcase it")
-      (?~ capitalize "capitalize it")
-      (?e eval       "evaluate it"))
-    "Avy dispatch keys: (CHAR VERB DESCRIPTION).
+    '((?K kill       "kill"          edit      "kill it; stay where you were")
+      (?C copy       "copy"          edit      "copy it")
+      (?y yank       "copy to point" edit      "copy it to point")
+      (?m move       "move to point" edit      "move it to point")
+      (?p replace    "replace"       edit      "replace it with the latest kill")
+      (?E change     "change"        edit      "kill it and go there to type (vi c)")
+      (?S swap       "swap"          edit      "swap it with the same thing at point")
+      (?r mark       "mark"          select    "go there and mark it")
+      (?* mark-all   "multi-cursor"  select    "multiple cursors on every occurrence")
+      (?c comment    "comment"       transform "comment/uncomment it")
+      (?= indent     "indent"        transform "reindent it")
+      (?U upcase     "upcase"        transform "upcase it")
+      (?L downcase   "downcase"      transform "downcase it")
+      (?~ capitalize "capitalize"    transform "capitalize it")
+      (?e eval       "eval"          transform "evaluate it"))
+    "Avy dispatch keys: (CHAR VERB LABEL GROUP DESCRIPTION).
+LABEL and GROUP place it in the verb menu; DESCRIPTION titles its noun menu.
 CHAR must not be in `avy-keys' (default: the home row).")
 
   (defconst fudo--avy-nouns
@@ -262,7 +266,7 @@ ORIGIN is where avy was started, for the nouns that are ranges."
 (defmacro fudo--avy-define-verbs ()
   `(progn
      ,@(cl-loop
-        for (_char verb desc) in fudo--avy-verbs
+        for (_char verb _label _group desc) in fudo--avy-verbs
         for hydra = (intern (format "fudo-avy-%s-hydra" verb))
         for excluded = (cdr (assq verb fudo--avy-verb-excludes))
         for nouns = (cl-remove-if (lambda (n) (memq (nth 1 n) excluded))
@@ -300,12 +304,75 @@ ORIGIN is where avy was started, for the nouns that are ranges."
     (helpful-at-point))
   t)
 
+;;; Verb menu, shown while avy waits for a verb or a label.
+
+(defvar fudo-avy-verb-menu t
+  "When to show the verb menu during an avy jump.
+t shows it as soon as the labels appear, a number shows it after that
+many idle seconds (so it only appears when you hesitate), nil never.")
+
+(defun fudo--avy-key (char)
+  (propertize (key-description (vector char)) 'face 'hydra-face-blue))
+
+(defun fudo--avy-menu-row (title entries)
+  "One menu row: TITLE, then (CHAR . LABEL) ENTRIES."
+  (concat (format "%-10s" title)
+          (mapconcat (lambda (e) (format "%s %s" (fudo--avy-key (car e)) (cdr e)))
+                     entries "   ")))
+
+(defun fudo--avy-verb-menu-text ()
+  "The verb menu: this file's verbs by group, then avy's other dispatch keys."
+  (let* ((ours (mapcar #'car fudo--avy-verbs))
+         (groups (cl-remove-duplicates (mapcar #'cl-fourth fudo--avy-verbs)
+                                       :from-end t))
+         (others (cl-loop for (char . fn) in avy-dispatch-alist
+                          unless (memq char ours)
+                          collect (cons char (replace-regexp-in-string
+                                              "\\`avy-action-\\(fudo-\\)?" ""
+                                              (symbol-name fn))))))
+    (mapconcat
+     #'identity
+     (append
+      (list "Avy: press a verb, then the target's label   (C-g quits)")
+      (cl-loop for group in groups
+               collect (fudo--avy-menu-row
+                        group
+                        (cl-loop for (char _verb label g) in fudo--avy-verbs
+                                 when (eq g group) collect (cons char label))))
+      (list (fudo--avy-menu-row "avy/other" (sort others (lambda (a b) (< (car a) (car b)))))))
+     "\n")))
+
+(defun fudo--avy-show-verb-menu ()
+  (require 'lv)
+  (lv-message
+   "%s"
+   (if (string-prefix-p "avy-action-fudo-" (format "%s" avy-action))
+       (format "Avy %s: now press the target's label"
+               (substring (symbol-name avy-action) (length "avy-action-fudo-")))
+     (fudo--avy-verb-menu-text))))
+
+(defun fudo--avy-with-verb-menu (orig &rest args)
+  "Around `avy--process-1': show the verb menu while avy reads a key.
+ace-window calls `avy-read' directly, so its window labels don't get it."
+  (if (or (null fudo-avy-verb-menu)
+          (< (length (car args)) 2))   ; a single candidate isn't read
+      (apply orig args)
+    (let ((timer (if (numberp fudo-avy-verb-menu)
+                     (run-with-idle-timer fudo-avy-verb-menu nil
+                                          #'fudo--avy-show-verb-menu)
+                   (fudo--avy-show-verb-menu)
+                   nil)))
+      (unwind-protect (apply orig args)
+        (when timer (cancel-timer timer))
+        (when (fboundp 'lv-delete-window) (lv-delete-window))))))
+
 ;; `avy-dispatch-alist' doesn't exist until avy loads.
 (after! avy
   (dolist (verb fudo--avy-verbs)
     (setf (alist-get (car verb) avy-dispatch-alist)
           (intern (format "avy-action-fudo-%s" (cadr verb)))))
-  (setf (alist-get ?H avy-dispatch-alist) #'avy-action-fudo-helpful))
+  (setf (alist-get ?H avy-dispatch-alist) #'avy-action-fudo-helpful)
+  (advice-add 'avy--process-1 :around #'fudo--avy-with-verb-menu))
 
 (provide 'avy-config)
 ;;; avy.el ends here
