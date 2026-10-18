@@ -19,6 +19,11 @@
 ;;
 ;;; Code:
 
+(require 'cl-lib)
+
+(defvar fudo--avy-hydra-point nil
+  "Buffer position chosen by Avy, consumed by the next hydra head.")
+
 (defun kill-thing-at-point (thing)
   "Return a lambda to kill the THING at point."
   (lambda (pt)
@@ -114,7 +119,7 @@ wrap in save-mark-and-excursion."
         (goto-char start)
         (insert tgt)))))
 
-(defhydra hydra-action-kill (:color red :hint nil)
+(defhydra hydra-action-kill (:color blue :hint nil)
   "Avy kill"
   ("k" (lambda () (avy-action-kill-stay fudo--avy-hydra-point))      "kill and stay")
   ("d" (fudo--avy-wrap-action (kill-thing-at-point 'defun))     "defun")
@@ -127,7 +132,7 @@ wrap in save-mark-and-excursion."
   ("u" (fudo--avy-wrap-action (kill-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (kill-thing-at-point 'word))      "word"))
 
-(defhydra hydra-action-copy (:color green :hint nil)
+(defhydra hydra-action-copy (:color blue :hint nil)
   "Avy copy"
   ("d" (fudo--avy-wrap-action (copy-thing-at-point 'defun))     "defun")
   ("e" (fudo--avy-wrap-action (copy-thing-at-point 'email))     "email")
@@ -139,7 +144,7 @@ wrap in save-mark-and-excursion."
   ("u" (fudo--avy-wrap-action (copy-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (copy-thing-at-point 'word))      "word"))
 
-(defhydra hydra-action-yank (:color green :hint nil)
+(defhydra hydra-action-yank (:color blue :hint nil)
   "Avy yank"
   ("d" (fudo--avy-wrap-action (yank-thing-at-point 'defun))     "defun")
   ("e" (fudo--avy-wrap-action (yank-thing-at-point 'email))     "email")
@@ -151,7 +156,7 @@ wrap in save-mark-and-excursion."
   ("u" (fudo--avy-wrap-action (yank-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (yank-thing-at-point 'word))      "word"))
 
-(defhydra hydra-action-move (:color green :hint nil)
+(defhydra hydra-action-move (:color blue :hint nil)
   "Avy move"
   ("d" (fudo--avy-wrap-action (move-thing-at-point 'defun))     "defun")
   ("e" (fudo--avy-wrap-action (move-thing-at-point 'email))     "email")
@@ -163,7 +168,7 @@ wrap in save-mark-and-excursion."
   ("u" (fudo--avy-wrap-action (move-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (move-thing-at-point 'word))      "word"))
 
-(defhydra hydra-action-comment (:color green :hint nil)
+(defhydra hydra-action-comment (:color blue :hint nil)
   "Avy comment"
   ("d" (fudo--avy-wrap-action (comment-thing-at-point 'defun))     "defun")
   ("l" (fudo--avy-wrap-action (comment-thing-at-point 'line))      "line")
@@ -178,7 +183,7 @@ wrap in save-mark-and-excursion."
   (activate-mark)
   t)
 
-(defhydra hydra-action-region (:color green :hint nil)
+(defhydra hydra-action-region (:color blue :hint nil)
   "Avy mark region"
   ("j" (fudo--avy-wrap-action (lambda (pt) (set-region (point) pt))) "to-point")
   ("e" (fudo--avy-wrap-action (mark-thing-at-point 'email))     "email")
@@ -190,7 +195,7 @@ wrap in save-mark-and-excursion."
   ("u" (fudo--avy-wrap-action (mark-thing-at-point 'url))       "url")
   ("w" (fudo--avy-wrap-action (mark-thing-at-point 'word))      "word"))
 
-(defhydra hydra-action-swap (:color green :hint nil)
+(defhydra hydra-action-swap (:color blue :hint nil)
   "Avy swap object"
   ("l" (fudo--avy-wrap-action (swap-thing-at-point 'line))      "line")
   ("p" (fudo--avy-wrap-action (swap-thing-at-point 'paragraph)) "paragraph")
@@ -244,15 +249,17 @@ wrap in save-mark-and-excursion."
   (setq fudo--avy-hydra-point pt)
   (hydra-action-yank/body))
 
-(setf (alist-get ?c avy-dispatch-alist) #'avy-action-comment
-      (alist-get ?C avy-dispatch-alist) #'avy-action-copy
-      (alist-get ?H avy-dispatch-alist) #'helpful-at-point
-      (alist-get ?K avy-dispatch-alist) #'avy-action-kill
-      (alist-get ?m avy-dispatch-alist) #'avy-action-move
-      (alist-get ?r avy-dispatch-alist) #'avy-action-region
-      (alist-get ?S avy-dispatch-alist) #'avy-action-swap
-      (alist-get ?y avy-dispatch-alist) #'avy-action-yank
-      (alist-get ?z avy-dispatch-alist) #'zap-to-point)
+;; `avy-dispatch-alist' doesn't exist until avy loads.
+(after! avy
+  (setf (alist-get ?c avy-dispatch-alist) #'avy-action-comment
+        (alist-get ?C avy-dispatch-alist) #'avy-action-copy
+        (alist-get ?H avy-dispatch-alist) #'helpful-at-point
+        (alist-get ?K avy-dispatch-alist) #'avy-action-kill
+        (alist-get ?m avy-dispatch-alist) #'avy-action-move
+        (alist-get ?r avy-dispatch-alist) #'avy-action-region
+        (alist-get ?S avy-dispatch-alist) #'avy-action-swap
+        (alist-get ?y avy-dispatch-alist) #'avy-action-yank
+        (alist-get ?z avy-dispatch-alist) #'zap-to-point))
 
 (provide 'avy-menus)
 ;;; avy.el ends here

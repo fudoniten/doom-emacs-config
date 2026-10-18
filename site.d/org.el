@@ -10,11 +10,7 @@
 
 (add-hook 'org-after-todo-statistics-hook #'org-summary-todo)
 
-;; org-modern: beautiful modern Org appearance
-;; Docs: https://github.com/minad/org-modern
-(after! org
-  (use-package org-modern
-    :config (global-org-modern-mode)))
+;; org-modern is enabled by the `+pretty' flag on :lang org in init.el.
 
 (provide 'org-config)
 ;;; org.el ends here

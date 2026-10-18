@@ -6,12 +6,16 @@
 ;; nix-ts-mode: native tree-sitter mode for Nix
 ;; Docs: https://github.com/nix-community/nix-ts-mode
 (use-package nix-ts-mode
-  :mode "\\.nix\\'"
-  :config
-  (when (locate-library "eglot")
-    (after! eglot
-      (add-to-list 'eglot-server-programs '(nix-ts-mode . ("nil")))
-      (add-hook 'nix-ts-mode-hook #'eglot-ensure))))
+  :mode "\\.nix\\'")
+
+;; LSP via eglot + nil (https://github.com/oxalica/nil) for both Nix modes.
+;; The hooks are added eagerly (`eglot-ensure' is autoloaded); only the
+;; server list has to wait for eglot itself.
+(when (locate-library "eglot")
+  (after! eglot
+    (add-to-list 'eglot-server-programs '((nix-mode nix-ts-mode) . ("nil"))))
+  (add-hook 'nix-mode-hook #'eglot-ensure)
+  (add-hook 'nix-ts-mode-hook #'eglot-ensure))
 
 ;; nixfmt formatter via apheleia (used by format +onsave)
 ;; Install nixfmt: https://github.com/NixOS/nixfmt

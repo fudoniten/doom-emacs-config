@@ -15,13 +15,6 @@
 ;;  \___|_| |_| |_|\__,_|___/
 ;;
 
-(defun eshell/ff (file)
-  (if (file-exists-p file)
-      (progn
-        (message "Opening file: %s" file)
-        (find-file file))
-    (message "File not found: %s" file)))
-
 (defun eshell/x ()
   "Exit eshell and close the window."
   (insert "exit")
@@ -62,8 +55,16 @@
 (setenv "PAGER" "cat")
 (setenv "EDITOR" "emacsclient -t")
 
-(add-to-list 'eshell-visual-commands "ssh")
-(add-to-list 'eshell-visual-commands "tail")
+;; Inside eshell, EDITOR opens files in the current frame instead.
+;; (`process-environment' is buffer-local in eshell, so this doesn't leak.)
+(add-hook 'eshell-mode-hook
+          (lambda () (setenv "EDITOR" "emacsclient")))
+
+;; `eshell-visual-commands' lives in em-term, which isn't loaded at startup;
+;; touching it earlier signals void-variable and aborts the rest of this file.
+(after! em-term
+  (add-to-list 'eshell-visual-commands "ssh")
+  (add-to-list 'eshell-visual-commands "tail"))
 
 (defun eshell-append-history ()
   "Call `eshell-write-history' with the `append' parameter set to t."
@@ -77,16 +78,20 @@
 
 (setq eshell-history-size 10000)
 
-;; eshell-syntax-highlighting: syntax highlighting in the eshell prompt
-;; Docs: https://github.com/akreisher/eshell-syntax-highlighting
-(use-package eshell-syntax-highlighting
-  :after eshell
-  :config (eshell-syntax-highlighting-global-mode 1))
-
 ;; capf-autosuggest: fish-like right-arrow completion suggestions
 ;; Docs: https://github.com/emacs-straight/capf-autosuggest
 (use-package capf-autosuggest
   :hook (eshell-mode . capf-autosuggest-mode))
+
+;; bash-completion: complete via a real bash in M-x shell and eshell.
+(defun my/eshell-mode-completion-hook ()
+  (add-hook 'completion-at-point-functions
+            #'bash-completion-capf-nonexclusive nil t))
+
+(use-package bash-completion
+  :commands (bash-completion-dynamic-complete bash-completion-capf-nonexclusive)
+  :hook ((shell-dynamic-complete-functions . bash-completion-dynamic-complete)
+         (eshell-mode . my/eshell-mode-completion-hook)))
 
 (provide 'eshell-config)
 ;;; eshell.el ends here

@@ -37,9 +37,8 @@ returns unexpected data."
             (with-current-buffer buf
               (goto-char (point-min))
               (re-search-forward "^$" nil t)
-              (let* ((json-object-type 'alist)
-                     (json-array-type  'list)
-                     (data (json-read)))
+              (let ((data (json-parse-buffer :object-type 'alist
+                                             :array-type  'list)))
                 (when (listp data)
                   (mapcar (lambda (m) (alist-get 'name m))
                           (alist-get 'models data)))))

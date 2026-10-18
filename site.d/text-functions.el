@@ -4,13 +4,15 @@
 
 ;;; Code:
 
-(defun duplicate-line()
-  "Duplicate the current line."
-  (interactive)
-  (let ((text (thing-at-point 'line)))
-    (save-excursion
-      (end-of-line)
-      (insert "\n" text))))
+;; Emacs 29+ ships `duplicate-line'; only define a fallback for older Emacsen.
+(unless (fboundp 'duplicate-line)
+  (defun duplicate-line ()
+    "Duplicate the current line."
+    (interactive)
+    (let ((text (thing-at-point 'line)))
+      (save-excursion
+        (end-of-line)
+        (insert "\n" text)))))
 
 (defun toggle-comment-on-line ()
   "Toggle comment on the current line or region."
@@ -22,20 +24,6 @@
               end (region-end)))
     (comment-or-uncomment-region start end)
     (message "Toggled comment on line")))
-
-(defun open-line-below ()
-  "Open a new line below the current one and move the cursor there."
-  (interactive)
-  (end-of-line)
-  (newline-and-indent))
-
-(defun open-line-above ()
-  "Open a new line above the current one and move the cursor there."
-  (interactive)
-  (beginning-of-line)
-  (newline)
-  (forward-line -1)
-  (indent-according-to-mode))
 
 (defun kill-whitespace ()
   "Kill the whitespace from here to the next non-whitespace character."
@@ -138,30 +126,8 @@
         ((looking-at "\\s\)") (forward-char 1) (backward-list 1) (message "Moved to matching parenthesis"))
         (t (self-insert-command (or arg 1)))))
 
-(defun kill-matching-lines (regexp &optional rstart rend interactive)
-  "Kill lines containing matches for REGEXP."
-  (interactive
-   (keep-lines-read-args "Kill lines containing match for regexp"))
-  (let ((buffer-file-name nil)) ;; HACK for `clone-buffer'
-    (with-current-buffer (clone-buffer nil nil)
-      (let ((inhibit-read-only t))
-        (keep-lines regexp rstart rend interactive)
-        (kill-region (or rstart (line-beginning-position))
-                     (or rend (point-max)))
-        (message "Killed lines matching regexp: %s" regexp))
-      (kill-buffer)))
-  (unless (and buffer-read-only kill-read-only-ok)
-    (flush-lines regexp rstart rend interactive)))
-
-(defun avy-action-kill-whole-line (pt)
-  "Kill the whole line at point PT."
-  (save-excursion
-    (goto-char pt)
-    (kill-whole-line)
-    (message "Killed whole line at point: %s" pt))
-  (select-window
-   (cdr (ring-ref avy-ring 0)))
-  t)
+;; `kill-matching-lines' is built in since Emacs 28 (replace.el).
+;; `avy-action-kill-whole-line' is provided by avy itself.
 
 (provide 'text-functions)
 
