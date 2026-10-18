@@ -37,7 +37,7 @@ handles it (`modules/programs/doom-emacs.nix`):
 | File | Contents |
 |------|----------|
 | `agent-shell-tramp.el` | Run agent-shell (ACP) agents on remote hosts over TRAMP. |
-| `avy.el` | Extra avy dispatch actions (comment/copy/kill/move/mark/swap/yank) using hydras. |
+| `avy.el` | vi-style verb + noun editing on avy targets (`C-.`, a verb key, the label, then a noun from a hydra menu). The verbs and nouns are two tables at the top of the file. |
 | `babashka.el` | `.bb` files as Clojure; CIDER/babashka nREPL. |
 | `bindings.el` | Keybindings. It began as a copy of Doom's `+emacs-bindings.el` and is loaded on top of it. |
 | `clojure.el` | Clojure: smartparens off (paredit instead), CIDER jack-in keys. |
