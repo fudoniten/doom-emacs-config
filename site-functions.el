@@ -66,6 +66,14 @@ under the XDG base directories) load first, then this repo's site.d/."
     (message "loading configuration directories: %s" (mapconcat #'identity conf-dirs ", "))
     (load-configuration-directories conf-dirs)))
 
+(defun base64-encode-region-oneline (start end)
+  "Base64-encode the region as one line, ignoring trailing newlines."
+  (interactive "r")
+  (save-excursion
+    (goto-char end)
+    (skip-chars-backward "\n\r" start)
+    (base64-encode-region start (point) t)))
+
 (provide 'site-functions)
 
 ;; site-functions.el ends here
