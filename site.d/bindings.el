@@ -230,6 +230,7 @@
          :desc "Send to Launchbar"          "l" #'+macos/send-to-launchbar
          :desc "Send project to Launchbar"  "L" #'+macos/send-project-to-launchbar
          :desc "Open in iTerm"              "i" #'+macos/open-in-iterm)
+       :desc "Kubernetes"         "k"  #'kubernetes-overview
        (:when (modulep! :tools docker)
          :desc "Docker" "D" #'docker)
        (:when (modulep! :email mu4e)
@@ -275,6 +276,7 @@
       (:prefix-map ("a" . "AI")
        :desc "Open agent shell"          "a" #'agent-shell
        :desc "New agent shell"           "A" #'agent-shell-new-shell
+       :desc "OpenCode agent shell"      "o" #'agent-shell-opencode-start-agent
        :desc "gptel chat"                "c" #'gptel
        (:prefix-map ("g" . "gptel")
         :desc "Open chat"                "g" #'gptel
