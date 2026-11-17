@@ -119,7 +119,7 @@ that lives outside the repo:
   `C-c t`, …) **beats a plain `(map! "C-c x" …)` global binding** for the
   same key. Pick global `C-c` keys that aren't leader prefixes.
 - `C-c a …` is the AI prefix: agent-shell, gptel (`g`), ellama (`e`),
-  hermes (`h`), kirocrew (`k`), aidermacs (`d`).
+  hermes (`h`), kirocrew (`k`), OpenCode (`o`).
 - `C-c S …` is search (moved from Doom's `C-c s`, which is `consult-line` here).
 - `C-c V …` is bookmarks.
 

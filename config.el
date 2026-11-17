@@ -113,8 +113,6 @@
    consult-buffer consult-bookmark consult-recent-file
    :preview-key "C-SPC"))
 
-(use-package aidermacs
-  :after transient)
 (use-package polymuse :if (locate-library "polymuse"))
 (use-package canon   :if (locate-library "canon"))
 

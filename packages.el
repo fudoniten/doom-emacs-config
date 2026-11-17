@@ -29,7 +29,6 @@
 (maybe-package! restclient)
 
 ;; Development Tools
-(maybe-package! aidermacs)
 (maybe-package! edit-server)
 (maybe-package! gptel :recipe (:nonrecursive t))
 (maybe-package! kubernetes)
